@@ -44,14 +44,14 @@
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \*---------------------------------------------------------------------------*/
 
-package com.poolik.classfinder;
+package com.poolik.classfinder.filter;
 
 import java.lang.reflect.Modifier;
 
 /**
- * <p><tt>AbstractClassFilter</tt> implements a {@link ClassFilter}
- * that matches class names that (a) can be loaded and (b) are abstract. It
- * relies on the pool of classes read by a {@link ClassFinder}; it's
+ * <p><tt>InterfaceOnlyClassFilter</tt> implements a {@link ClassFilter}
+ * that matches class names that (a) can be loaded and (b) are interfaces. It
+ * relies on the pool of classes read by a {@link com.poolik.classfinder.ClassFinder}; it's
  * not really useful by itself.</p>
  * <p/>
  * <p>This class is really just a convenient specialization of the
@@ -59,17 +59,14 @@ import java.lang.reflect.Modifier;
  *
  * @author Copyright &copy; 2006 Brian M. Clapper
  * @version <tt>$Revision$</tt>
- * @see ClassFilter
- * @see ClassModifiersClassFilter
- * @see ClassFinder
- * @see Modifier
  */
-public class AbstractClassFilter extends ClassModifiersClassFilter {
+public class InterfaceOnlyClassFilter extends ClassModifiersClassFilter {
+
   /**
-   * Construct a new <tt>AbstractClassFilter</tt> that will accept
-   * only abstract classes.
+   * Construct a new <tt>InterfaceOnlyClassFilter</tt> that will accept
+   * only classes that are interfaces.
    */
-  public AbstractClassFilter() {
-    super(Modifier.ABSTRACT);
+  public InterfaceOnlyClassFilter() {
+    super(Modifier.INTERFACE);
   }
 }

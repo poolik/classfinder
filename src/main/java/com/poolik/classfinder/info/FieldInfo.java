@@ -1,4 +1,4 @@
-package com.poolik.classfinder;
+package com.poolik.classfinder.info;
 
 /**
  * Holds information about a field within a class.

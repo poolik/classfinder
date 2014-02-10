@@ -46,6 +46,9 @@
 
 package com.poolik.classfinder;
 
+import com.poolik.classfinder.filter.ClassFilter;
+import com.poolik.classfinder.info.ClassInfo;
+import com.poolik.classfinder.info.ClassUtil;
 import com.poolik.classfinder.io.*;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -74,14 +77,14 @@ import java.util.zip.ZipFile;
  * adds the contents to the search path, as well. After the
  * <tt>ClassFinder</tt> has been "primed" with things to search, you call
  * its {@link #findClasses findClasses()} method to have it search for
- * the classes, optionally passing a {@link ClassFilter} that can be used
+ * the classes, optionally passing a {@link com.poolik.classfinder.filter.ClassFilter} that can be used
  * to filter out classes you're not interested in.</p>
  * <p/>
- * <p>This package also contains a rich set of {@link ClassFilter}
+ * <p>This package also contains a rich set of {@link com.poolik.classfinder.filter.ClassFilter}
  * implementations, including:</p>
  * <p/>
  * <ul>
- * <li>A {@link RegexClassFilter} for filtering class names on a regular
+ * <li>A {@link com.poolik.classfinder.filter.RegexClassFilter} for filtering class names on a regular
  * expression
  * <li>Filters for testing various class attributes (such as whether a
  * class is an interface, or a subclass of a known class, etc.
@@ -124,7 +127,7 @@ import java.util.zip.ZipFile;
  * }
  * </pre></blockquote>
  * <p/>
- * <p>This class, and the {@link ClassInfo} class, rely on the ASM
+ * <p>This class, and the {@link com.poolik.classfinder.info.ClassInfo} class, rely on the ASM
  * byte-code manipulation library. If that library is not available, this
  * package will not work. See
  * <a href="http://asm.objectweb.org"><i>asm.objectweb.org</i></a>
@@ -140,6 +143,7 @@ public class ClassFinder {
   private LinkedHashMap<String, File> placesToSearch = new LinkedHashMap<String, File>();
   private Map<String, ClassInfo> foundClasses = new LinkedHashMap<String, ClassInfo>();
   private static final Logger log = LoggerFactory.getLogger(ClassFinder.class);
+  private boolean errorIfResultEmpty;
 
   /**
    * Add the contents of the system classpath for classes.
@@ -238,6 +242,10 @@ public class ClassFinder {
     foundClasses.clear();
   }
 
+  public void setErrorIfResultEmpty(boolean errorIfResultEmpty) {
+    this.errorIfResultEmpty = errorIfResultEmpty;
+  }
+
   /**
    * Find all classes in the search areas, implicitly accepting all of
    * them.
@@ -257,7 +265,6 @@ public class ClassFinder {
    */
   public Collection<ClassInfo> findClasses(ClassFilter filter) {
     int total = 0;
-
     foundClasses.clear();
 
     loadAllClasses();
@@ -269,7 +276,12 @@ public class ClassFinder {
     Collection<ClassInfo> classes = new ArrayList<ClassInfo>();
     total = filterClasses(filter, total, classes);
 
-    log.info("Returning " + total + " total classes");
+    if (total == 0 && errorIfResultEmpty) {
+      log.info("Found no classes, throwing exception");
+      throw new ClassFinderException("Didn't find any classes");
+    } else {
+      log.info("Returning " + total + " total classes");
+    }
     foundClasses.clear();
     return classes;
   }
@@ -429,7 +441,7 @@ public class ClassFinder {
           log.error("Can't open \"" + entry.getName() +
               "\" in zip file \"" + zipName + "\": ",
               ex);
-        } catch (ClassUtilException ex) {
+        } catch (ClassFinderException ex) {
           log.error("Can't open \"" + entry.getName() +
               "\" in zip file \"" + zipName + "\": ",
               ex);
@@ -460,7 +472,7 @@ public class ClassFinder {
         loadClassData(is, classVisitor);
       } catch (IOException ex) {
         log.error("Can't open \"" + path + "\": ", ex);
-      } catch (ClassUtilException ex) {
+      } catch (ClassFinderException ex) {
         log.error("Can't open \"" + path + "\": ", ex);
       } finally {
         if (is != null) {
@@ -522,16 +534,12 @@ public class ClassFinder {
   }
 
   private void loadClassData(InputStream is, ClassVisitor classVisitor)
-      throws ClassUtilException {
+      throws ClassFinderException {
     try {
       ClassReader cr = new ClassReader(is);
       cr.accept(classVisitor, ClassInfo.ASM_CR_ACCEPT_CRITERIA);
     } catch (Exception ex) {
-      throw new ClassUtilException(ClassUtil.BUNDLE_NAME,
-          "ClassFinder.cantReadClassStream",
-          "Unable to load class from open " +
-              "input stream",
-          ex);
+      throw new ClassFinderException( "Unable to load class from open input stream", ex);
     }
   }
 

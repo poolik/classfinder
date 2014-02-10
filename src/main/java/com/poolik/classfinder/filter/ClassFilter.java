@@ -44,64 +44,32 @@
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \*---------------------------------------------------------------------------*/
 
-package com.poolik.classfinder;
+package com.poolik.classfinder.filter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.poolik.classfinder.ClassFinder;
+import com.poolik.classfinder.info.ClassInfo;
 
 /**
- * <p><tt>SubclassClassFilter</tt> is a {@link ClassFilter} that matches
- * class names that (a) can be loaded and (b) extend a given subclass or
- * implement a specified interface, directly or indirectly. It uses the
- * <tt>java.lang.Class.isAssignableFrom()</p> method, so it actually has to
- * load each class it tests. For maximum flexibility, a
- * <tt>SubclassClassFilter</tt> can be configured to use a specific class
- * loader.</p>
+ * Instances of classes that implement this interface are used, with a
+ * {@link com.poolik.classfinder.ClassFinder} object, to filter class names. This interface is
+ * deliberately reminiscent of the <tt>java.io.FilenameFilter</tt>
+ * interface.
  *
  * @author Copyright &copy; 2006 Brian M. Clapper
  * @version <tt>$Revision$</tt>
+ * @see com.poolik.classfinder.ClassFinder
  */
-public class SubclassClassFilter implements ClassFilter {
-  private static final Logger log = LoggerFactory.getLogger(SubclassClassFilter.class);
-  private Class baseClass;
-
+public interface ClassFilter {
   /**
-   * Construct a new <tt>SubclassClassFilter</tt> that will accept
-   * only classes that extend the specified class or implement the
-   * specified interface.
+   * Tests whether a class name should be included in a class name
+   * list.
    *
-   * @param baseClassOrInterface the base class or interface
+   * @param classInfo   the loaded information about the class
+   * @param classFinder the {@link com.poolik.classfinder.ClassFinder} that called this filter
+   *                    (mostly for access to <tt>ClassFinder</tt>
+   *                    utility methods)
+   * @return <tt>true</tt> if and only if the name should be included
+   * in the list; <tt>false</tt> otherwise
    */
-  public SubclassClassFilter(Class baseClassOrInterface) {
-    this.baseClass = baseClassOrInterface;
-  }
-
-  /**
-   * Perform the acceptance test on the loaded <tt>Class</tt> object.
-   *
-   * @param classInfo   the {@link ClassInfo} object to test
-   * @param classFinder the invoking {@link ClassFinder} object
-   * @return <tt>true</tt> if the class name matches,
-   * <tt>false</tt> if it doesn't
-   */
-  public boolean accept(ClassInfo classInfo, ClassFinder classFinder) {
-    Map<String, ClassInfo> superClasses = new HashMap<String, ClassInfo>();
-
-    if (baseClass.isInterface()) {
-      log.info("is interface");
-      classFinder.findAllInterfaces(classInfo, superClasses);
-      log.info(String.valueOf(superClasses));
-    } else {
-      log.info("NOT is interface");
-      classFinder.findAllSuperClasses(classInfo, superClasses);
-      log.info(String.valueOf(superClasses));
-    }
-
-    boolean contains = superClasses.keySet().contains(baseClass.getName());
-    log.info(getClass().getSimpleName() + " " + contains);
-    return contains;
-  }
+  public boolean accept(ClassInfo classInfo, ClassFinder classFinder);
 }

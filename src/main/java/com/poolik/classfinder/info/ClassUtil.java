@@ -44,7 +44,9 @@
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \*---------------------------------------------------------------------------*/
 
-package com.poolik.classfinder;
+package com.poolik.classfinder.info;
+
+import com.poolik.classfinder.ClassFinderException;
 
 import java.io.File;
 
@@ -55,7 +57,6 @@ import java.io.File;
  * @version <tt>$Revision$</tt>
  */
 public class ClassUtil {
-  static final String BUNDLE_NAME = "org.clapper.util.classfinder.Bundle";
   private ClassUtil() {}
 
   /**
@@ -111,7 +112,7 @@ public class ClassUtil {
    * Convenience method that loads a class and attempts to instantiate it
    * via its default constructor. This method catches all the explicit,
    * checked exceptions that can occur and wraps them in a
-   * {@link ClassUtilException}, reducing the number of lines of code
+   * {@link com.poolik.classfinder.ClassFinderException}, reducing the number of lines of code
    * necessary to instantiate a class given its name. Note that this method
    * <i>only</i> catches and wraps checked exceptions. Unchecked exceptions,
    * such as <tt>ExceptionInInitializerError</tt>, are propagated directly
@@ -119,24 +120,24 @@ public class ClassUtil {
    *
    * @param className the fully-qualified class name
    * @return the instantiated object
-   * @throws ClassUtilException on error
+   * @throws com.poolik.classfinder.ClassFinderException on error
    */
   public static Object instantiateClass(String className)
-      throws ClassUtilException {
+      throws ClassFinderException {
     try {
       Class cls = Class.forName(className);
       return cls.newInstance();
     } catch (ClassNotFoundException ex) {
-      throw new ClassUtilException("Can't load class " + className,
+      throw new ClassFinderException("Can't load class " + className,
           ex);
     } catch (ClassCastException ex) {
-      throw new ClassUtilException("Can't load class " + className,
+      throw new ClassFinderException("Can't load class " + className,
           ex);
     } catch (IllegalAccessException ex) {
-      throw new ClassUtilException("Can't load class " + className,
+      throw new ClassFinderException("Can't load class " + className,
           ex);
     } catch (InstantiationException ex) {
-      throw new ClassUtilException("Can't load class " + className,
+      throw new ClassFinderException("Can't load class " + className,
           ex);
     }
   }

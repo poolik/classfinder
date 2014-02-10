@@ -44,7 +44,10 @@
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \*---------------------------------------------------------------------------*/
 
-package com.poolik.classfinder;
+package com.poolik.classfinder.filter;
+
+import com.poolik.classfinder.ClassFinder;
+import com.poolik.classfinder.info.ClassInfo;
 
 /**
  * <tt>NotClassFilter</tt> is a {@link ClassFilter} that
@@ -63,7 +66,7 @@ package com.poolik.classfinder;
  * @see ClassFilter
  * @see AndClassFilter
  * @see OrClassFilter
- * @see ClassFinder
+ * @see com.poolik.classfinder.ClassFinder
  * @see InterfaceOnlyClassFilter
  */
 public class NotClassFilter implements ClassFilter {
@@ -83,8 +86,8 @@ public class NotClassFilter implements ClassFilter {
    * Tests whether a class name should be included in a class name
    * list.
    *
-   * @param classInfo   the {@link ClassInfo} object to test
-   * @param classFinder the invoking {@link ClassFinder} object
+   * @param classInfo   the {@link com.poolik.classfinder.info.ClassInfo} object to test
+   * @param classFinder the invoking {@link com.poolik.classfinder.ClassFinder} object
    * @return <tt>true</tt> if and only if the name should be included
    * in the list; <tt>false</tt> otherwise
    */

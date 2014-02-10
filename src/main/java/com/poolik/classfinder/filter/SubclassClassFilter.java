@@ -44,73 +44,59 @@
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \*---------------------------------------------------------------------------*/
 
-package com.poolik.classfinder;
+package com.poolik.classfinder.filter;
 
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import com.poolik.classfinder.ClassFinder;
+import com.poolik.classfinder.info.ClassInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * <p><tt>RegexClassFilter</tt> is a {@link ClassFilter} that matches class
- * names using a regular expression. Multiple regular expression filters
- * can be combined using {@link AndClassFilter} and/or
- * {@link OrClassFilter} objects.</p>
- * <p/>
- * <p>This class does not have to load the classes it's filtering; it
- * matches on the class name only.</p>
- * <p/>
- * <p><tt>RegexClassFilter</tt> uses the <tt>java.util.regex</tt>
- * regular expression classes.</p>
+ * <p><tt>SubclassClassFilter</tt> is a {@link ClassFilter} that matches
+ * class names that (a) can be loaded and (b) extend a given subclass or
+ * implement a specified interface, directly or indirectly. It uses the
+ * <tt>java.lang.Class.isAssignableFrom()</p> method, so it actually has to
+ * load each class it tests. For maximum flexibility, a
+ * <tt>SubclassClassFilter</tt> can be configured to use a specific class
+ * loader.</p>
  *
  * @author Copyright &copy; 2006 Brian M. Clapper
  * @version <tt>$Revision$</tt>
- * @see ClassFilter
- * @see AndClassFilter
- * @see OrClassFilter
- * @see NotClassFilter
- * @see ClassFinder
  */
-public class RegexClassFilter implements ClassFilter {
-
-  private Pattern pattern;
+public class SubclassClassFilter implements ClassFilter {
+  private static final Logger log = LoggerFactory.getLogger(SubclassClassFilter.class);
+  private Class baseClass;
 
   /**
-   * Construct a new <tt>RegexClassFilter</tt> using the specified
-   * pattern.
+   * Construct a new <tt>SubclassClassFilter</tt> that will accept
+   * only classes that extend the specified class or implement the
+   * specified interface.
    *
-   * @param regex the regular expression to add
-   * @throws PatternSyntaxException bad regular expression
+   * @param baseClassOrInterface the base class or interface
    */
-  public RegexClassFilter(String regex)
-      throws PatternSyntaxException {
-    pattern = Pattern.compile(regex);
+  public SubclassClassFilter(Class baseClassOrInterface) {
+    this.baseClass = baseClassOrInterface;
   }
 
   /**
-   * Construct a new <tt>RegexClassFilter</tt> using the specified
-   * pattern.
+   * Perform the acceptance test on the loaded <tt>Class</tt> object.
    *
-   * @param regex      the regular expression to add
-   * @param regexFlags regular expression compilation flags (e.g.,
-   *                   <tt>Pattern.CASE_INSENSITIVE</tt>). See
-   *                   the Javadocs for <tt>java.util.regex</tt> for
-   *                   legal values.
-   * @throws PatternSyntaxException bad regular expression
-   */
-  public RegexClassFilter(String regex, int regexFlags)
-      throws PatternSyntaxException {
-    pattern = Pattern.compile(regex, regexFlags);
-  }
-
-  /**
-   * Determine whether a class name is to be accepted or not, based on
-   * the regular expression specified to the constructor.
-   *
-   * @param classInfo   the {@link ClassInfo} object to test
-   * @param classFinder the invoking {@link ClassFinder} object
+   * @param classInfo   the {@link com.poolik.classfinder.info.ClassInfo} object to test
+   * @param classFinder the invoking {@link com.poolik.classfinder.ClassFinder} object
    * @return <tt>true</tt> if the class name matches,
    * <tt>false</tt> if it doesn't
    */
   public boolean accept(ClassInfo classInfo, ClassFinder classFinder) {
-    return pattern.matcher(classInfo.getClassName()).find();
+    Map<String, ClassInfo> superClasses = new HashMap<String, ClassInfo>();
+
+    if (baseClass.isInterface())
+      classFinder.findAllInterfaces(classInfo, superClasses);
+    else
+      classFinder.findAllSuperClasses(classInfo, superClasses);
+
+    return superClasses.keySet().contains(baseClass.getName());
   }
 }

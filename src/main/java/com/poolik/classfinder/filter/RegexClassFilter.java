@@ -44,29 +44,76 @@
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \*---------------------------------------------------------------------------*/
 
-package com.poolik.classfinder;
+package com.poolik.classfinder.filter;
+
+import com.poolik.classfinder.ClassFinder;
+import com.poolik.classfinder.info.ClassInfo;
+
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
- * Instances of classes that implement this interface are used, with a
- * {@link ClassFinder} object, to filter class names. This interface is
- * deliberately reminiscent of the <tt>java.io.FilenameFilter</tt>
- * interface.
+ * <p><tt>RegexClassFilter</tt> is a {@link ClassFilter} that matches class
+ * names using a regular expression. Multiple regular expression filters
+ * can be combined using {@link AndClassFilter} and/or
+ * {@link OrClassFilter} objects.</p>
+ * <p/>
+ * <p>This class does not have to load the classes it's filtering; it
+ * matches on the class name only.</p>
+ * <p/>
+ * <p><tt>RegexClassFilter</tt> uses the <tt>java.util.regex</tt>
+ * regular expression classes.</p>
  *
  * @author Copyright &copy; 2006 Brian M. Clapper
  * @version <tt>$Revision$</tt>
- * @see ClassFinder
+ * @see ClassFilter
+ * @see AndClassFilter
+ * @see OrClassFilter
+ * @see NotClassFilter
+ * @see com.poolik.classfinder.ClassFinder
  */
-public interface ClassFilter {
+public class RegexClassFilter implements ClassFilter {
+
+  private Pattern pattern;
+
   /**
-   * Tests whether a class name should be included in a class name
-   * list.
+   * Construct a new <tt>RegexClassFilter</tt> using the specified
+   * pattern.
    *
-   * @param classInfo   the loaded information about the class
-   * @param classFinder the {@link ClassFinder} that called this filter
-   *                    (mostly for access to <tt>ClassFinder</tt>
-   *                    utility methods)
-   * @return <tt>true</tt> if and only if the name should be included
-   * in the list; <tt>false</tt> otherwise
+   * @param regex the regular expression to add
+   * @throws PatternSyntaxException bad regular expression
    */
-  public boolean accept(ClassInfo classInfo, ClassFinder classFinder);
+  public RegexClassFilter(String regex)
+      throws PatternSyntaxException {
+    pattern = Pattern.compile(regex);
+  }
+
+  /**
+   * Construct a new <tt>RegexClassFilter</tt> using the specified
+   * pattern.
+   *
+   * @param regex      the regular expression to add
+   * @param regexFlags regular expression compilation flags (e.g.,
+   *                   <tt>Pattern.CASE_INSENSITIVE</tt>). See
+   *                   the Javadocs for <tt>java.util.regex</tt> for
+   *                   legal values.
+   * @throws PatternSyntaxException bad regular expression
+   */
+  public RegexClassFilter(String regex, int regexFlags)
+      throws PatternSyntaxException {
+    pattern = Pattern.compile(regex, regexFlags);
+  }
+
+  /**
+   * Determine whether a class name is to be accepted or not, based on
+   * the regular expression specified to the constructor.
+   *
+   * @param classInfo   the {@link com.poolik.classfinder.info.ClassInfo} object to test
+   * @param classFinder the invoking {@link com.poolik.classfinder.ClassFinder} object
+   * @return <tt>true</tt> if the class name matches,
+   * <tt>false</tt> if it doesn't
+   */
+  public boolean accept(ClassInfo classInfo, ClassFinder classFinder) {
+    return pattern.matcher(classInfo.getClassName()).find();
+  }
 }

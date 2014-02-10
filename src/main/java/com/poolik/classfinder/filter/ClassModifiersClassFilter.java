@@ -44,29 +44,65 @@
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \*---------------------------------------------------------------------------*/
 
-package com.poolik.classfinder;
+package com.poolik.classfinder.filter;
 
-import java.lang.reflect.Modifier;
+import com.poolik.classfinder.ClassFinder;
+import com.poolik.classfinder.info.ClassInfo;
 
 /**
- * <p><tt>InterfaceOnlyClassFilter</tt> implements a {@link ClassFilter}
- * that matches class names that (a) can be loaded and (b) are interfaces. It
- * relies on the pool of classes read by a {@link ClassFinder}; it's
- * not really useful by itself.</p>
+ * <p><tt>ClassModifiersClassFilter</tt> is a {@link com.poolik.classfinder.filter.ClassFilter} that
+ * matches class names that (a) can be loaded and (b) match a set of class
+ * modifiers (as defined by the constants in the
+ * <tt>java.lang.reflect.Modifier</tt> class). For instance, the the
+ * following code fragment defines a filter that will match only public
+ * final classes:</p>
  * <p/>
- * <p>This class is really just a convenient specialization of the
- * {@link ClassModifiersClassFilter} class.</p>
+ * <blockquote><pre>
+ * import java.lang.reflect.Modifier;
+ * <p/>
+ * ...
+ * <p/>
+ * ClassFilter = new ClassModifiersClassFilter (Modifier.PUBLIC | Modifier.FINAL);
+ * </pre></blockquote>
+ * <p/>
+ * <p>This class relies on the pool of classes read by a
+ * {@link com.poolik.classfinder.ClassFinder}; it's not really useful by itself.</p>
  *
  * @author Copyright &copy; 2006 Brian M. Clapper
  * @version <tt>$Revision$</tt>
+ * @see com.poolik.classfinder.filter.ClassFilter
+ * @see com.poolik.classfinder.ClassFinder
+ * @see java.lang.reflect.Modifier
  */
-public class InterfaceOnlyClassFilter extends ClassModifiersClassFilter {
+public class ClassModifiersClassFilter implements ClassFilter {
+
+  private int modifiers = 0;
+
+   /**
+   * Construct a new <tt>ClassModifiersClassFilter</tt> that will accept
+   * any classes with the specified modifiers.
+   *
+   * @param modifiers the bit-field of modifier flags. See the
+   *                  <tt>java.lang.reflect.Modifier</tt> class for
+   *                  legal values.
+   */
+  public ClassModifiersClassFilter(int modifiers) {
+    super();
+    this.modifiers = modifiers;
+  }
 
   /**
-   * Construct a new <tt>InterfaceOnlyClassFilter</tt> that will accept
-   * only classes that are interfaces.
+   * Tests whether a class name should be included in a class name
+   * list.
+   *
+   * @param classInfo   the loaded information about the class
+   * @param classFinder the {@link com.poolik.classfinder.ClassFinder} that called this filter
+   *                    (mostly for access to <tt>ClassFinder</tt>
+   *                    utility methods)
+   * @return <tt>true</tt> if and only if the name should be included
+   * in the list; <tt>false</tt> otherwise
    */
-  public InterfaceOnlyClassFilter() {
-    super(Modifier.INTERFACE);
+  public boolean accept(ClassInfo classInfo, ClassFinder classFinder) {
+    return ((classInfo.getModifier() & modifiers) != 0);
   }
 }

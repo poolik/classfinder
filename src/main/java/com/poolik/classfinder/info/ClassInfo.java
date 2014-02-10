@@ -44,8 +44,10 @@
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \*---------------------------------------------------------------------------*/
 
-package com.poolik.classfinder;
+package com.poolik.classfinder.info;
 
+import com.poolik.classfinder.ClassFinderException;
+import com.poolik.classfinder.EmptyVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -72,7 +74,7 @@ import java.util.Set;
  * @version <tt>$Revision$</tt>
  */
 public class ClassInfo extends EmptyVisitor {
-  static int ASM_CR_ACCEPT_CRITERIA = 0;
+  public static int ASM_CR_ACCEPT_CRITERIA = 0;
 
   private int modifier = 0;
   private String className = null;
@@ -86,18 +88,14 @@ public class ClassInfo extends EmptyVisitor {
    * Create a <tt>ClassInfo</tt> object from a file.
    *
    * @param classFile the abstract path to the class file to load
-   * @throws ClassUtilException load error
+   * @throws com.poolik.classfinder.ClassFinderException load error
    */
-  public ClassInfo(File classFile) throws ClassUtilException {
+  public ClassInfo(File classFile) throws ClassFinderException {
     try {
       ClassReader cr = new ClassReader(new FileInputStream(classFile));
       cr.accept(this, ASM_CR_ACCEPT_CRITERIA);
     } catch (IOException ex) {
-      throw new ClassUtilException(ClassUtil.BUNDLE_NAME,
-          "ClassInfo.cantReadClassFile",
-          "Unable to load class file \"{0}\"",
-          new Object[]{classFile.getPath()},
-          ex);
+      throw new ClassFinderException(String.format("Unable to load class file '%s'", classFile.getPath()), ex);
     }
   }
 
@@ -105,18 +103,14 @@ public class ClassInfo extends EmptyVisitor {
    * Create a <tt>ClassInfo</tt> object from an <tt>InputStream</tt>.
    *
    * @param is the open <tt>InputStream</tt> containing the class bytes
-   * @throws ClassUtilException load error
+   * @throws com.poolik.classfinder.ClassFinderException load error
    */
-  public ClassInfo(InputStream is) throws ClassUtilException {
+  public ClassInfo(InputStream is) throws ClassFinderException {
     try {
       ClassReader cr = new ClassReader(is);
       cr.accept(this, ASM_CR_ACCEPT_CRITERIA);
     } catch (IOException ex) {
-      throw new ClassUtilException(ClassUtil.BUNDLE_NAME,
-          "ClassInfo.cantReadClassStream",
-          "Unable to load class from open " +
-              "input stream",
-          ex);
+      throw new ClassFinderException("Unable to load class from open input stream", ex);
     }
   }
 
@@ -130,7 +124,7 @@ public class ClassInfo extends EmptyVisitor {
    * @param asmAccessMask  ASM API's access mask for the class
    * @param location       File (jar, zip) or directory where class was found
    */
-  ClassInfo(String name,
+  public ClassInfo(String name,
             String superClassName,
             String[] interfaces,
             int asmAccessMask,
@@ -146,10 +140,10 @@ public class ClassInfo extends EmptyVisitor {
   /**
    * Get the parent (super) class name, if any. Returns null if the
    * superclass is <tt>java.lang.Object</tt>. Note: To find other
-   * ancestor classes, use {@link ClassFinder#findAllSuperClasses}.
+   * ancestor classes, use {@link com.poolik.classfinder.ClassFinder#findAllSuperClasses}.
    *
    * @return the super class name, or null
-   * @see ClassFinder#findAllSuperClasses
+   * @see com.poolik.classfinder.ClassFinder#findAllSuperClasses
    */
   public String getSuperClassName() {
     return superClassName;
@@ -158,11 +152,11 @@ public class ClassInfo extends EmptyVisitor {
   /**
    * Get the names of all <i>directly</i> implemented interfaces. To find
    * indirectly implemented interfaces, use
-   * {@link ClassFinder#findAllInterfaces}.
+   * {@link com.poolik.classfinder.ClassFinder#findAllInterfaces}.
    *
    * @return an array of the names of all directly implemented interfaces,
    * or null if there are none
-   * @see ClassFinder#findAllInterfaces
+   * @see com.poolik.classfinder.ClassFinder#findAllInterfaces
    */
   public String[] getInterfaces() {
     return implementedInterfaces;

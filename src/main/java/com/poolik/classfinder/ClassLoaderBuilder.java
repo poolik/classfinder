@@ -46,6 +46,7 @@
 
 package com.poolik.classfinder;
 
+import com.poolik.classfinder.info.ClassUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

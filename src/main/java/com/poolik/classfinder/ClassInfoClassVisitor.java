@@ -46,6 +46,7 @@
 
 package com.poolik.classfinder;
 
+import com.poolik.classfinder.info.ClassInfo;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
