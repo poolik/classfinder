@@ -187,7 +187,7 @@ public class ClassFinder {
 
       added = true;
     } else {
-      log.info("cannot contain classes!");
+      log.info("The given path '" + file.getAbsolutePath() + "' cannot contain classes!");
     }
 
     return added;
@@ -204,8 +204,9 @@ public class ClassFinder {
    * are skipped.)
    */
   public int add(File[] files) {
-    int totalAdded = 0;
+    log.info("Adding files to look into: " + Arrays.toString(files));
 
+    int totalAdded = 0;
     for (File file : files) {
       if (add(file))
         totalAdded++;
@@ -269,7 +270,6 @@ public class ClassFinder {
 
     loadAllClasses();
 
-    log.info(String.valueOf(foundClasses));
     log.info("Loaded " + foundClasses.size() + " classes.");
 
     // Next, weed out the ones we don't want.
@@ -288,7 +288,6 @@ public class ClassFinder {
 
   private int filterClasses(ClassFilter filter, int total, Collection<ClassInfo> classes) {
     for (ClassInfo classInfo : foundClasses.values()) {
-      log.trace(classInfo.toString());
       String className = classInfo.getClassName();
       String locationName = classInfo.getClassLocation().getPath();
       log.trace("Looking at " + locationName + " (" + className + ")");
@@ -305,16 +304,20 @@ public class ClassFinder {
 
   private void loadAllClasses() {
     for (File file : placesToSearch.values()) {
-      String name = file.getPath();
-
-      log.info("Finding classes in " + name);
-      if (isJar(name))
-        processJar(name, foundClasses);
-      else if (isZip(name))
-        processZip(name, foundClasses);
-      else
-        processDirectory(file, foundClasses);
+      loadClassesIn(file);
     }
+  }
+
+  private void loadClassesIn(File file) {
+    String name = file.getPath();
+
+    log.info("Finding classes in " + name);
+    if (isJar(name))
+      processJar(name, foundClasses);
+    else if (isZip(name))
+      processZip(name, foundClasses);
+    else
+      processDirectory(file, foundClasses);
   }
 
   /**
@@ -452,13 +455,28 @@ public class ClassFinder {
 
   private void processDirectory(File dir,
                                 Map<String, ClassInfo> foundClasses) {
-    RecursiveFileFinder finder = new RecursiveFileFinder();
-    RegexFileFilter nameFilter =
-        new RegexFileFilter("\\.class$", FileFilterMatchType.FILENAME);
-    AndFileFilter fileFilter = new AndFileFilter(nameFilter,
-        new FileOnlyFilter());
-    Collection<File> files = new ArrayList<File>();
-    finder.findFiles(dir, fileFilter, files);
+    loadAllClassFilesInDir(dir, foundClasses);
+    loadAllJarFilesInDir(dir);
+    loadAllZipFilesInDir(dir);
+  }
+
+  private void loadAllZipFilesInDir(File dir) {
+    loadAllFilesWithSuffixInDir(dir, ".zip");
+  }
+
+  private void loadAllJarFilesInDir(File dir) {
+    loadAllFilesWithSuffixInDir(dir, ".jar");
+  }
+
+  private void loadAllFilesWithSuffixInDir(File dir, String suffix) {
+    Collection<File> jarFiles = filterFilesBySuffix(dir, suffix);
+    for (File jarFile : jarFiles) {
+      loadClassesIn(jarFile);
+    }
+  }
+
+  private void loadAllClassFilesInDir(File dir, Map<String, ClassInfo> foundClasses) {
+    Collection<File> files = filterFilesBySuffix(dir, ".class");
 
     ClassVisitor classVisitor = new ClassInfoClassVisitor(foundClasses,
         dir);
@@ -486,6 +504,17 @@ public class ClassFinder {
         }
       }
     }
+  }
+
+  private Collection<File> filterFilesBySuffix(File dir, String suffix) {
+    RecursiveFileFinder finder = new RecursiveFileFinder();
+    RegexFileFilter nameFilter =
+        new RegexFileFilter("\\"+suffix+"$", FileFilterMatchType.FILENAME);
+    AndFileFilter fileFilter = new AndFileFilter(nameFilter,
+        new FileOnlyFilter());
+    Collection<File> files = new ArrayList<File>();
+    finder.findFiles(dir, fileFilter, files);
+    return files;
   }
 
   private void loadJarClassPathEntries(File jarFile) {
