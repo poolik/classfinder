@@ -10,12 +10,12 @@ so this library didn't work together with projects that use asm 4.x)
 #Filters
 The following filters are available:
 
-*Aggergate filters* - used to combine different concrete filters together with logical operators (AND, OR, NOT)
+**Aggergate filters** - used to combine different concrete filters together with logical operators (AND, OR, NOT)
 * NotClassFilter.java
 * AndClassFilter.java
 * OrClassFilter.java
 
-*Concrete filters* - used to filter classes either by their modifiers (abstract, interface) or name
+**Concrete filters** - used to filter classes either by their modifiers (abstract, interface) or name
 * SubclassClassFilter.java - matches classes that are assignable to the base class
 * RegexClassFilter.java - matches classes by name
 * InterfaceOnlyClassFilter.java - matches classes that implement given interface
