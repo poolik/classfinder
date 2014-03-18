@@ -59,7 +59,7 @@ import java.util.regex.PatternSyntaxException;
  * <p>A <tt>RegexFileFilter</tt> can be configured to operate on just the
  * simple file name, or on the file's path.</p>
  * <p/>
- * <p><tt>RegexFileFilter</tt> uses the <tt>java.util.regex</tt>
+ * <p><tt>RegexFileFilter</tt> uses the <tt>java.testClasses.regex</tt>
  * regular expression classes.</p>
  *
  * @author Copyright &copy; 2004-2007 Brian M. Clapper
@@ -93,7 +93,7 @@ public class RegexFileFilter implements FileFilter {
    * @param regex      the regular expression to add
    * @param regexFlags regular expression compilation flags (e.g.,
    *                   <tt>Pattern.CASE_INSENSITIVE</tt>). See
-   *                   the Javadocs for <tt>java.util.regex</tt> for
+   *                   the Javadocs for <tt>java.testClasses.regex</tt> for
    *                   legal values.
    * @param matchType  <tt>FileFilterMatchType.FILENAME</tt> to match just the
    *                   filename, <tt>FileFilterMatchType.PATH</tt> to match

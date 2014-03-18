@@ -61,7 +61,7 @@ import java.util.regex.PatternSyntaxException;
  * <p>This class does not have to load the classes it's filtering; it
  * matches on the class name only.</p>
  * <p/>
- * <p><tt>RegexClassFilter</tt> uses the <tt>java.util.regex</tt>
+ * <p><tt>RegexClassFilter</tt> uses the <tt>java.testClasses.regex</tt>
  * regular expression classes.</p>
  *
  * @author Copyright &copy; 2006 Brian M. Clapper
@@ -95,7 +95,7 @@ public class RegexClassFilter implements ClassFilter {
    * @param regex      the regular expression to add
    * @param regexFlags regular expression compilation flags (e.g.,
    *                   <tt>Pattern.CASE_INSENSITIVE</tt>). See
-   *                   the Javadocs for <tt>java.util.regex</tt> for
+   *                   the Javadocs for <tt>java.testClasses.regex</tt> for
    *                   legal values.
    * @throws PatternSyntaxException bad regular expression
    */

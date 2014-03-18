@@ -106,30 +106,13 @@ public final class OrClassFilter implements ClassFilter {
   /**
    * Remove a filter from the set of contained filters.
    *
+   *
    * @param filter the <tt>ClassFilter</tt> to remove.
    * @see #addFilter
    */
-  public void removeFilter(ClassFilter filter) {
+  public OrClassFilter removeFilter(ClassFilter filter) {
     filters.remove(filter);
-  }
-
-  /**
-   * Get the contained filters, as an unmodifiable collection.
-   *
-   * @return the unmodifable <tt>Collection</tt>
-   */
-  public Collection<ClassFilter> getFilters() {
-    return Collections.unmodifiableCollection(filters);
-  }
-
-  /**
-   * Get the total number of contained filter objects (not counting any
-   * filter objects <i>they</i>, in turn, contain).
-   *
-   * @return the total
-   */
-  public int getTotalFilters() {
-    return filters.size();
+    return this;
   }
 
   /**
@@ -150,17 +133,13 @@ public final class OrClassFilter implements ClassFilter {
   public boolean accept(ClassInfo classInfo, ClassFinder classFinder) {
     boolean accepted = false;
 
-    if (filters.size() == 0)
-      accepted = true;
-
+    if (filters.size() == 0) accepted = true;
     else {
       for (ClassFilter filter : filters) {
         accepted = filter.accept(classInfo, classFinder);
-        if (accepted)
-          break;
+        if (accepted) break;
       }
     }
-
     return accepted;
   }
 }

@@ -76,33 +76,23 @@ import com.poolik.classfinder.info.ClassInfo;
  */
 public class ClassModifiersClassFilter implements ClassFilter {
 
-  private int modifiers = 0;
+  private final int modifiers;
+  private final int excludeModifiers;
 
-   /**
-   * Construct a new <tt>ClassModifiersClassFilter</tt> that will accept
-   * any classes with the specified modifiers.
-   *
-   * @param modifiers the bit-field of modifier flags. See the
-   *                  <tt>java.lang.reflect.Modifier</tt> class for
-   *                  legal values.
-   */
-  public ClassModifiersClassFilter(int modifiers) {
+  public ClassModifiersClassFilter(int includeModifiers) {
     super();
-    this.modifiers = modifiers;
+    this.modifiers = includeModifiers;
+    this.excludeModifiers = 0;
   }
 
-  /**
-   * Tests whether a class name should be included in a class name
-   * list.
-   *
-   * @param classInfo   the loaded information about the class
-   * @param classFinder the {@link com.poolik.classfinder.ClassFinder} that called this filter
-   *                    (mostly for access to <tt>ClassFinder</tt>
-   *                    utility methods)
-   * @return <tt>true</tt> if and only if the name should be included
-   * in the list; <tt>false</tt> otherwise
-   */
+  public ClassModifiersClassFilter(int modifiers, int excludeModifiers) {
+    super();
+    this.modifiers = modifiers;
+    this.excludeModifiers = excludeModifiers;
+  }
+
   public boolean accept(ClassInfo classInfo, ClassFinder classFinder) {
-    return ((classInfo.getModifier() & modifiers) != 0);
+    return ((classInfo.getModifier() & modifiers) != 0)
+        && ((classInfo.getModifier() & excludeModifiers) == 0);
   }
 }

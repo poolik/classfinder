@@ -1,6 +1,6 @@
 *.class
 target/
-idea/
+.idea/
 *.iml
 
 # Package Files #

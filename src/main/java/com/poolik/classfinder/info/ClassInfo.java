@@ -184,6 +184,7 @@ public class ClassInfo extends EmptyVisitor {
     return methods;
   }
 
+  @Override
   public String toString() {
     StringBuilder buf = new StringBuilder();
 

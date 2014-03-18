@@ -67,9 +67,9 @@ import java.lang.reflect.Modifier;
 public class AbstractClassFilter extends ClassModifiersClassFilter {
   /**
    * Construct a new <tt>AbstractClassFilter</tt> that will accept
-   * only abstract classes.
+   * only abstract classes (no interfaces).
    */
   public AbstractClassFilter() {
-    super(Modifier.ABSTRACT);
+    super(Modifier.ABSTRACT, Modifier.INTERFACE);
   }
 }

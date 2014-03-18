@@ -118,8 +118,7 @@ import java.util.zip.ZipFile;
  *                 // Must not be abstract
  *                 new NotClassFilter (new AbstractClassFilter()));
  * <p/>
- *         Collection&lt;ClassInfo&gt; foundClasses = new ArrayList&lt;ClassInfo&gt;();
- *         finder.findClasses (foundClasses, filter);
+ *         Collection&lt;ClassInfo&gt; foundClasses = finder.findClasses(filter);
  * <p/>
  *         for (ClassInfo classInfo : foundClasses)
  *             System.out.println ("Found " + classInfo.getClassName());
@@ -138,10 +137,10 @@ import java.util.zip.ZipFile;
  * @author Copyright &copy; 2006 Brian M. Clapper
  * @version <tt>$Revision$</tt>
  */
-public class ClassFinder {
+public class  ClassFinder {
 
-  private LinkedHashMap<String, File> placesToSearch = new LinkedHashMap<String, File>();
-  private Map<String, ClassInfo> foundClasses = new LinkedHashMap<String, ClassInfo>();
+  private LinkedHashMap<String, File> placesToSearch = new LinkedHashMap<>();
+  private Map<String, ClassInfo> foundClasses = new LinkedHashMap<>();
   private static final Logger log = LoggerFactory.getLogger(ClassFinder.class);
   private boolean errorIfResultEmpty;
 
@@ -184,7 +183,6 @@ public class ClassFinder {
         if (isJar(absPath))
           loadJarClassPathEntries(file);
       }
-
       added = true;
     } else {
       log.info("The given path '" + file.getAbsolutePath() + "' cannot contain classes!");
@@ -204,15 +202,7 @@ public class ClassFinder {
    * are skipped.)
    */
   public int add(File[] files) {
-    log.info("Adding files to look into: " + Arrays.toString(files));
-
-    int totalAdded = 0;
-    for (File file : files) {
-      if (add(file))
-        totalAdded++;
-    }
-
-    return totalAdded;
+    return add(Arrays.asList(files));
   }
 
   /**
@@ -228,8 +218,7 @@ public class ClassFinder {
     int totalAdded = 0;
 
     for (File file : files) {
-      if (add(file))
-        totalAdded++;
+      if (add(file)) totalAdded++;
     }
 
     return totalAdded;
@@ -508,10 +497,8 @@ public class ClassFinder {
 
   private Collection<File> filterFilesBySuffix(File dir, String suffix) {
     RecursiveFileFinder finder = new RecursiveFileFinder();
-    RegexFileFilter nameFilter =
-        new RegexFileFilter("\\"+suffix+"$", FileFilterMatchType.FILENAME);
-    AndFileFilter fileFilter = new AndFileFilter(nameFilter,
-        new FileOnlyFilter());
+    RegexFileFilter nameFilter = new RegexFileFilter("\\"+suffix+"$", FileFilterMatchType.FILENAME);
+    AndFileFilter fileFilter = new AndFileFilter(nameFilter, new FileOnlyFilter());
     Collection<File> files = new ArrayList<File>();
     finder.findFiles(dir, fileFilter, files);
     return files;
@@ -568,7 +555,7 @@ public class ClassFinder {
       ClassReader cr = new ClassReader(is);
       cr.accept(classVisitor, ClassInfo.ASM_CR_ACCEPT_CRITERIA);
     } catch (Exception ex) {
-      throw new ClassFinderException( "Unable to load class from open input stream", ex);
+      throw new ClassFinderException("Unable to load class from open input stream", ex);
     }
   }
 
