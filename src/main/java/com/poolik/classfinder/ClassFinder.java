@@ -203,8 +203,9 @@ public class ClassFinder {
     placesToSearch.clear();
   }
 
-  public void setErrorIfResultEmpty(boolean errorIfResultEmpty) {
+  public ClassFinder setErrorIfResultEmpty(boolean errorIfResultEmpty) {
     this.errorIfResultEmpty = errorIfResultEmpty;
+    return this;
   }
 
   /**
