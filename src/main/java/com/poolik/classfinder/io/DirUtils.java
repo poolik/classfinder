@@ -18,7 +18,7 @@ public class DirUtils {
   /**
    * If the path exists, completely removes given file tree starting at and including the given path.
    *
-   * @param path
+   * @param path - path to delete if it exists
    * @throws IOException
    */
   public static void deleteIfExists(Path path) throws IOException {
@@ -31,8 +31,8 @@ public class DirUtils {
   /**
    * Copies a directory tree
    *
-   * @param from
-   * @param to
+   * @param from - copy from
+   * @param to - to
    * @throws IOException
    */
   public static void copy(Path from, Path to) throws IOException {

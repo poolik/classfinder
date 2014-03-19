@@ -49,7 +49,7 @@ package com.poolik.classfinder;
 import com.poolik.classfinder.filter.ClassFilter;
 import com.poolik.classfinder.info.ClassInfo;
 import com.poolik.classfinder.resourceLoader.AdditionalResourceLoader;
-import com.poolik.classfinder.resourceLoader.JarClassPathentriesLoader;
+import com.poolik.classfinder.resourceLoader.JarClasspathEntriesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,7 +132,7 @@ import static com.poolik.classfinder.info.FileUtil.fileCanContainClasses;
 public class  ClassFinder {
 
   private Map<String, File> placesToSearch = new LinkedHashMap<>();
-  private static Collection<AdditionalResourceLoader> resourceLoaders = Arrays.<AdditionalResourceLoader>asList(new JarClassPathentriesLoader());
+  private static Collection<AdditionalResourceLoader> resourceLoaders = Arrays.<AdditionalResourceLoader>asList(new JarClasspathEntriesLoader());
   private static final Logger log = LoggerFactory.getLogger(ClassFinder.class);
   private boolean errorIfResultEmpty;
 

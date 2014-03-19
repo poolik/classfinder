@@ -1,7 +1,6 @@
 package com.poolik.classfinder.io.visitor;
 
 import com.poolik.classfinder.io.Predicate;
-import com.poolik.classfinder.io.Predicates;
 
 import java.io.IOException;
 import java.nio.file.*;
