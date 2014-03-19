@@ -48,16 +48,15 @@ package com.poolik.classfinder;
 
 import com.poolik.classfinder.filter.ClassFilter;
 import com.poolik.classfinder.info.ClassInfo;
-import com.poolik.classfinder.info.FileUtil;
+import com.poolik.classfinder.resourceLoader.AdditionalResourceLoader;
+import com.poolik.classfinder.resourceLoader.JarClassPathentriesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
+
+import static com.poolik.classfinder.info.FileUtil.fileCanContainClasses;
 
 /**
  * <p>A <tt>ClassFinder</tt> object is used to find classes. By default, an
@@ -133,6 +132,7 @@ import java.util.jar.Manifest;
 public class  ClassFinder {
 
   private Map<String, File> placesToSearch = new LinkedHashMap<>();
+  private static Collection<AdditionalResourceLoader> resourceLoaders = Arrays.<AdditionalResourceLoader>asList(new JarClassPathentriesLoader());
   private static final Logger log = LoggerFactory.getLogger(ClassFinder.class);
   private boolean errorIfResultEmpty;
 
@@ -160,12 +160,13 @@ public class  ClassFinder {
   public ClassFinder add(File file) {
     log.info("Adding file to look into: " + file.getAbsolutePath());
 
-    if (FileUtil.fileCanContainClasses(file)) {
+    if (fileCanContainClasses(file)) {
       String absPath = file.getAbsolutePath();
       if (placesToSearch.get(absPath) == null) {
         placesToSearch.put(absPath, file);
-        if (FileUtil.isJar(absPath))
-          loadJarClassPathEntries(file);
+        for (AdditionalResourceLoader resourceLoader : resourceLoaders) {
+          if (resourceLoader.canLoadAdditional(file)) resourceLoader.loadAdditional(file, this);
+        }
       }
     } else {
       log.info("The given path '" + file.getAbsolutePath() + "' cannot contain classes!");
@@ -258,49 +259,5 @@ public class  ClassFinder {
       }
     }
     return classes;
-  }
-
-  private void loadJarClassPathEntries(File jarFile) {
-    try {
-      System.out.println(jarFile);
-      JarFile jar = new JarFile(jarFile);
-      Manifest manifest = jar.getManifest();
-      if (manifest == null)
-        return;
-
-      Attributes attrs = manifest.getMainAttributes();
-      Set<Object> keys = attrs.keySet();
-
-      for (Object key : keys) {
-        String value = (String) attrs.get(key);
-        if (key.toString().equals("Class-Path")) {
-          String jarName = jar.getName();
-          log.trace("Adding Class-Path from jar " + jarName);
-
-          StringBuilder buf = new StringBuilder();
-          StringTokenizer tok = new StringTokenizer(value);
-          while (tok.hasMoreTokens()) {
-            buf.setLength(0);
-            String element = tok.nextToken();
-            String parent = jarFile.getParent();
-            if (parent != null) {
-              buf.append(parent);
-              buf.append(File.separator);
-            }
-
-            buf.append(element);
-          }
-
-          String element = buf.toString();
-          log.debug("From " + jarName + ": " + element);
-
-          add(new File(element));
-        }
-      }
-    } catch (IOException ex) {
-      log.error("I/O error processing jar file \"" +
-              jarFile.getPath() + "\"",
-          ex);
-    }
   }
 }
