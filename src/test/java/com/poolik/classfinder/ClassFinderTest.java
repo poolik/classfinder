@@ -1,13 +1,14 @@
 package com.poolik.classfinder;
 
 import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
+import com.poolik.classfinder.filter.SubclassClassFilter;
 import com.poolik.classfinder.info.ClassInfo;
+import com.poolik.classfinder.otherTestClasses.AbstractClass;
 import com.poolik.classfinder.testClasses.TestInZip;
-import com.poolik.classfinder.util.DirUtils;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,11 +19,12 @@ import org.zeroturnaround.zip.ZipUtil;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.*;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 
 import static org.hamcrest.core.Is.is;
+import static org.jboss.shrinkwrap.api.container.ManifestContainer.DEFAULT_MANIFEST_NAME;
 import static org.junit.Assert.assertThat;
 
 public class ClassFinderTest extends TestWithTestClasses {
@@ -35,7 +37,18 @@ public class ClassFinderTest extends TestWithTestClasses {
       return !path.getFileName().toString().contains("Zip");
     }
   };
+  private String classPath;
 
+  @Before
+  public void saveClasspath() {
+    classPath = System.getProperty("java.class.path");
+    System.setProperty("java.class.path", getTestFolder());
+  }
+
+  @After
+  public void restoreClasspath() {
+    System.setProperty("java.class.path", classPath);
+  }
   @Test
   public void findsClassesFromDirectory() throws IOException, URISyntaxException {
     copyTestClassesExcludingZip();
@@ -98,6 +111,30 @@ public class ClassFinderTest extends TestWithTestClasses {
     classFinder.add(createJarTo(new File(getTestFolder())));
 
     assertThat(classFinder.findClasses().size(), is(1));
+  }
+
+  @Test
+  public void findsClassesFromJarManifestClassPathJar() {
+    ClassFinder classFinder = new ClassFinder();
+    createJarTo(new File(getTestFolder()));
+    JavaArchive archive = ShrinkWrap.create(JavaArchive.class, "parent.jar")
+        .addAsManifestResource(DEFAULT_MANIFEST_NAME);
+    File target = new File(getTestFolder(), "parent.jar");
+    archive.as(ZipExporter.class).exportTo(target, true);
+    classFinder.add(target);
+
+    Collection<ClassInfo> classes = classFinder.findClasses();
+    assertThat(classes.size(), is(1));
+  }
+
+  @Test
+  public void findsClassesFromClassPath() {
+    System.setProperty("java.class.path", getTestFolder());
+    ClassFinder classFinder = new ClassFinder();
+    classFinder.addClassPath();
+    Collection<ClassInfo> classes = classFinder.findClasses(new SubclassClassFilter(AbstractClass.class));
+
+    assertThat(classes.size(), is(1));
   }
 
   @Test(expected = ClassFinderException.class)
