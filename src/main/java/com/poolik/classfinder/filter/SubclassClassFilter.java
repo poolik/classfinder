@@ -55,7 +55,7 @@ import java.util.Map;
  * <p><tt>SubclassClassFilter</tt> is a {@link ClassFilter} that matches
  * class names that (a) can be loaded and (b) extend a given subclass or
  * implement a specified interface, directly or indirectly. It uses the
- * <tt>java.lang.Class.isAssignableFrom()</p> method, so it actually has to
+ * <tt>java.lang.Class.isAssignableFrom()</tt> method, so it actually has to
  * load each class it tests. For maximum flexibility, a
  * <tt>SubclassClassFilter</tt> can be configured to use a specific class
  * loader.</p>
