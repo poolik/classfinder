@@ -8,10 +8,21 @@
     <artifactId>classfinder</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
-       <shrinkwrapVersion>1.2.1</shrinkwrapVersion>
-       <logbackVersion>1.0.13</logbackVersion>
-       <jacocoVersion>0.6.4.201312101107</jacocoVersion>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <shrinkwrapVersion>1.2.1</shrinkwrapVersion>
+        <logbackVersion>1.0.13</logbackVersion>
+        <jacocoVersion>0.6.4.201312101107</jacocoVersion>
     </properties>
+
+    <developers>
+        <developer>
+            <id>poolik</id>
+            <name>Tõnis Pool</name>
+            <email>tonis.pool@gmail.com</email>
+            <url>http://www.poolik.com</url>
+        </developer>
+    </developers>
 
     <distributionManagement>
         <repository>
@@ -97,17 +108,33 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacocoVersion}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.eluder.coveralls</groupId>
-                <artifactId>coveralls-maven-plugin</artifactId>
-                <version>2.2.0</version>
-            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>travis</id>
+            <activation>
+                <property>
+                    <name>env.TRAVIS</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacocoVersion}</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.eluder.coveralls</groupId>
+                        <artifactId>coveralls-maven-plugin</artifactId>
+                        <version>2.2.0</version>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
