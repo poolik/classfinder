@@ -47,6 +47,7 @@
 package com.poolik.classfinder.filter;
 
 import com.poolik.classfinder.ClassFinder;
+import com.poolik.classfinder.ClassHierarchyResolver;
 import com.poolik.classfinder.info.ClassInfo;
 
 import java.util.Collection;
@@ -127,16 +128,15 @@ public final class OrClassFilter implements ClassFilter {
    * returns <tt>true</tt>.</p>
    *
    * @param classInfo   the {@link com.poolik.classfinder.info.ClassInfo} object to test
-   * @param classFinder the invoking {@link com.poolik.classfinder.ClassFinder} object
    * @return <tt>true</tt> if the name matches, <tt>false</tt> if it doesn't
    */
-  public boolean accept(ClassInfo classInfo, ClassFinder classFinder) {
+  public boolean accept(ClassInfo classInfo, ClassHierarchyResolver hierarchyResolver) {
     boolean accepted = false;
 
     if (filters.size() == 0) accepted = true;
     else {
       for (ClassFilter filter : filters) {
-        accepted = filter.accept(classInfo, classFinder);
+        accepted = filter.accept(classInfo, hierarchyResolver);
         if (accepted) break;
       }
     }

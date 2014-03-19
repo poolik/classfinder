@@ -47,6 +47,7 @@
 package com.poolik.classfinder.filter;
 
 import com.poolik.classfinder.ClassFinder;
+import com.poolik.classfinder.ClassHierarchyResolver;
 import com.poolik.classfinder.info.ClassInfo;
 
 /**
@@ -91,7 +92,7 @@ public class ClassModifiersClassFilter implements ClassFilter {
     this.excludeModifiers = excludeModifiers;
   }
 
-  public boolean accept(ClassInfo classInfo, ClassFinder classFinder) {
+  public boolean accept(ClassInfo classInfo, ClassHierarchyResolver hierarchyResolver) {
     return ((classInfo.getModifier() & modifiers) != 0)
         && ((classInfo.getModifier() & excludeModifiers) == 0);
   }

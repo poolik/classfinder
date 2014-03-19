@@ -48,8 +48,8 @@ package com.poolik.classfinder.info;
 
 import java.io.File;
 
-public class ClassUtil {
-  private ClassUtil() {
+public class FileUtil {
+  private FileUtil() {
   }
 
   public static boolean fileCanContainClasses(File file) {
@@ -63,5 +63,13 @@ public class ClassUtil {
     }
 
     return can;
+  }
+
+  public static boolean isJar(String fileName) {
+    return fileName.toLowerCase().endsWith(".jar");
+  }
+
+  public static boolean isZip(String fileName) {
+    return fileName.toLowerCase().endsWith(".zip");
   }
 }

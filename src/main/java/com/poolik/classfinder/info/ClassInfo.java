@@ -152,11 +152,11 @@ public class ClassInfo extends EmptyVisitor {
   /**
    * Get the names of all <i>directly</i> implemented interfaces. To find
    * indirectly implemented interfaces, use
-   * {@link com.poolik.classfinder.ClassFinder#findAllInterfaces}.
+   * {@link com.poolik.classfinder.ClassHierarchyResolver#findAllInterfaces}.
    *
    * @return an array of the names of all directly implemented interfaces,
    * or null if there are none
-   * @see com.poolik.classfinder.ClassFinder#findAllInterfaces
+   * @see com.poolik.classfinder.ClassHierarchyResolver#findAllInterfaces
    */
   public String[] getInterfaces() {
     return implementedInterfaces;

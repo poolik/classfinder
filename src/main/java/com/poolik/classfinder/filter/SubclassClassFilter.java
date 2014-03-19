@@ -46,7 +46,7 @@
 
 package com.poolik.classfinder.filter;
 
-import com.poolik.classfinder.ClassFinder;
+import com.poolik.classfinder.ClassHierarchyResolver;
 import com.poolik.classfinder.info.ClassInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,18 +84,15 @@ public class SubclassClassFilter implements ClassFilter {
   /**
    * Perform the acceptance test on the loaded <tt>Class</tt> object.
    *
-   * @param classInfo   the {@link com.poolik.classfinder.info.ClassInfo} object to test
-   * @param classFinder the invoking {@link com.poolik.classfinder.ClassFinder} object
    * @return <tt>true</tt> if the class name matches,
    * <tt>false</tt> if it doesn't
    */
-  public boolean accept(ClassInfo classInfo, ClassFinder classFinder) {
-    Map<String, ClassInfo> superClasses = new HashMap<String, ClassInfo>();
-
+  public boolean accept(ClassInfo classInfo, ClassHierarchyResolver hierarchyResolver) {
+    Map<String, ClassInfo> superClasses;
     if (baseClass.isInterface())
-      classFinder.findAllInterfaces(classInfo, superClasses);
+      superClasses = hierarchyResolver.findAllInterfaces(classInfo);
     else
-      classFinder.findAllSuperClasses(classInfo, superClasses);
+      superClasses = hierarchyResolver.findAllSuperClasses(classInfo);
 
     return superClasses.keySet().contains(baseClass.getName());
   }

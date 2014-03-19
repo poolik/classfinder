@@ -46,7 +46,7 @@
 
 package com.poolik.classfinder.filter;
 
-import com.poolik.classfinder.ClassFinder;
+import com.poolik.classfinder.ClassHierarchyResolver;
 import com.poolik.classfinder.info.ClassInfo;
 
 /**
@@ -87,11 +87,10 @@ public class NotClassFilter implements ClassFilter {
    * list.
    *
    * @param classInfo   the {@link com.poolik.classfinder.info.ClassInfo} object to test
-   * @param classFinder the invoking {@link com.poolik.classfinder.ClassFinder} object
    * @return <tt>true</tt> if and only if the name should be included
    * in the list; <tt>false</tt> otherwise
    */
-  public boolean accept(ClassInfo classInfo, ClassFinder classFinder) {
-    return !this.filter.accept(classInfo, classFinder);
+  public boolean accept(ClassInfo classInfo, ClassHierarchyResolver hierarchyResolver) {
+    return !this.filter.accept(classInfo, hierarchyResolver);
   }
 }

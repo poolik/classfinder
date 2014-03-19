@@ -46,7 +46,7 @@
 
 package com.poolik.classfinder.filter;
 
-import com.poolik.classfinder.ClassFinder;
+import com.poolik.classfinder.ClassHierarchyResolver;
 import com.poolik.classfinder.info.ClassInfo;
 
 /**
@@ -63,13 +63,8 @@ public interface ClassFilter {
   /**
    * Tests whether a class name should be included in a class name
    * list.
-   *
-   * @param classInfo   the loaded information about the class
-   * @param classFinder the {@link com.poolik.classfinder.ClassFinder} that called this filter
-   *                    (mostly for access to <tt>ClassFinder</tt>
-   *                    utility methods)
    * @return <tt>true</tt> if and only if the name should be included
    * in the list; <tt>false</tt> otherwise
    */
-  public boolean accept(ClassInfo classInfo, ClassFinder classFinder);
+  public boolean accept(ClassInfo classInfo, ClassHierarchyResolver hierarchyFinder);
 }
