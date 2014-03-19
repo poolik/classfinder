@@ -56,15 +56,15 @@ import com.poolik.classfinder.info.ClassInfo;
  * <tt>java.lang.reflect.Modifier</tt> class). For instance, the the
  * following code fragment defines a filter that will match only public
  * final classes:</p>
- * <p/>
+ * 
  * <blockquote><pre>
  * import java.lang.reflect.Modifier;
- * <p/>
+ * 
  * ...
- * <p/>
+ * 
  * ClassFilter = new ClassModifiersClassFilter (Modifier.PUBLIC | Modifier.FINAL);
  * </pre></blockquote>
- * <p/>
+ * 
  * <p>This class relies on the pool of classes read by a
  * {@link com.poolik.classfinder.ClassFinder}; it's not really useful by itself.</p>
  *

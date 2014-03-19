@@ -71,10 +71,10 @@ import static com.poolik.classfinder.info.FileUtil.fileCanContainClasses;
  * its {@link #findClasses findClasses()} method to have it search for
  * the classes, optionally passing a {@link com.poolik.classfinder.filter.ClassFilter} that can be used
  * to filter out classes you're not interested in.</p>
- * <p/>
+ *
  * <p>This package also contains a rich set of {@link com.poolik.classfinder.filter.ClassFilter}
  * implementations, including:</p>
- * <p/>
+ *
  * <ul>
  * <li>A {@link com.poolik.classfinder.filter.RegexClassFilter} for filtering class names on a regular
  * expression
@@ -82,15 +82,15 @@ import static com.poolik.classfinder.info.FileUtil.fileCanContainClasses;
  * class is an interface, or a subclass of a known class, etc.
  * <li>Filters that can combine other filters in logical operations
  * </ul>
- * <p/>
+ *
  * <p>The following example illustrates how you might use a
  * <tt>ClassFinder</tt> to locate all non-abstract classes that implement
  * the <tt>ClassFilter</tt> interface, searching the classpath as well
  * as anything specified on the command line.</p>
- * <p/>
+ *
  * <blockquote><pre>
  * import com.poolik.classfinder.*;
- * <p/>
+ *
  * public class Test
  * {
  *     public static void main (String[] args) throws Throwable
@@ -98,32 +98,31 @@ import static com.poolik.classfinder.info.FileUtil.fileCanContainClasses;
  *         ClassFinder finder = new ClassFinder();
  *         for (String arg : args)
  *             finder.add(new File(arg));
- * <p/>
+ *
  *         ClassFilter filter =
  *             new AndClassFilter
  *                 // Must not be an interface
  *                 (new NotClassFilter (new InterfaceOnlyClassFilter()),
- * <p/>
+ *
  *                 // Must implement the ClassFilter interface
  *                 new SubclassClassFilter (ClassFilter.class),
- * <p/>
+ *
  *                 // Must not be abstract
  *                 new NotClassFilter (new AbstractClassFilter()));
- * <p/>
+ *
  *         Collection&lt;ClassInfo&gt; foundClasses = finder.findClasses(filter);
- * <p/>
+ *
  *         for (ClassInfo classInfo : foundClasses)
  *             System.out.println ("Found " + classInfo.getClassName());
  *     }
  * }
  * </pre></blockquote>
- * <p/>
  * <p>This class, and the {@link com.poolik.classfinder.info.ClassInfo} class, rely on the ASM
  * byte-code manipulation library. If that library is not available, this
  * package will not work. See
  * <a href="http://asm.objectweb.org"><i>asm.objectweb.org</i></a>
  * for details on ASM.</p>
- * <p/>
+ *
  * <p><b>WARNING: This class is not thread-safe.</b></p>
  *
  * @author Copyright &copy; 2006 Brian M. Clapper

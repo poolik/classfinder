@@ -64,7 +64,7 @@ import java.util.Set;
 /**
  * <p>Holds information about a loaded class in a way that doesn't rely on
  * the underlying API used to load the class information.</p>
- * <p/>
+ * 
  * <p>This class relies on the ASM byte-code manipulation library. If that
  * library is not available, this package will not work. See
  * <a href="http://asm.objectweb.org"><i>asm.objectweb.org</i></a> for

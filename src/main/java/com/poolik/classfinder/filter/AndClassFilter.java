@@ -60,7 +60,7 @@ import java.util.List;
  * accepted if it is accepted by all contained filters. This
  * class conceptually provides a logical "AND" operator for class name
  * filters.</p>
- * <p/>
+ * 
  * <p>The contained filters are applied in the order they were added to
  * the <tt>AndClassFilter</tt> object. This class's
  * {@link #accept accept()} method stops looping over the contained filters
@@ -120,7 +120,7 @@ public final class AndClassFilter implements ClassFilter {
    * contained filters as soon as it encounters one whose
    * {@link ClassFilter#accept accept()} method returns
    * <tt>false</tt> (implementing a "short-circuited AND" operation.)</p>
-   * <p/>
+   * 
    * <p>If the set of contained filters is empty, then this method
    * returns <tt>true</tt>.</p>
    *

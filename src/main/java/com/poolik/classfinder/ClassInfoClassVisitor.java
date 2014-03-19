@@ -56,7 +56,7 @@ import java.util.Map;
 /**
  * <p>An ASM <tt>ClassVisitor</tt> that records the appropriate class
  * information for a {@link ClassFinder} object.</p>
- * <p/>
+ *
  * <p>This class relies on the ASM byte-code manipulation library. If that
  * library is not available, this package will not work. See
  * <a href="http://asm.objectweb.org"><i>asm.objectweb.org</i></a>

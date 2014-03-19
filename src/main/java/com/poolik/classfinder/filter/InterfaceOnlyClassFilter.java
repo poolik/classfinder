@@ -53,7 +53,7 @@ import java.lang.reflect.Modifier;
  * that matches class names that (a) can be loaded and (b) are interfaces. It
  * relies on the pool of classes read by a {@link com.poolik.classfinder.ClassFinder}; it's
  * not really useful by itself.</p>
- * <p/>
+ * 
  * <p>This class is really just a convenient specialization of the
  * {@link ClassModifiersClassFilter} class.</p>
  *

@@ -57,10 +57,10 @@ import java.util.regex.PatternSyntaxException;
  * names using a regular expression. Multiple regular expression filters
  * can be combined using {@link AndClassFilter} and/or
  * {@link OrClassFilter} objects.</p>
- * <p/>
+ * 
  * <p>This class does not have to load the classes it's filtering; it
  * matches on the class name only.</p>
- * <p/>
+ * 
  * <p><tt>RegexClassFilter</tt> uses the <tt>java.testClasses.regex</tt>
  * regular expression classes.</p>
  *

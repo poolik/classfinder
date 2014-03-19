@@ -56,7 +56,7 @@ import com.poolik.classfinder.info.ClassInfo;
  * class conceptually provides a logical "NOT" operator for class name
  * filters. For example, the following code fragment will create a filter
  * that finds all classes that are not interfaces.
- * <p/>
+ *
  * <blockquote><pre>
  * NotClassFilter filter = new NotClassFilter (new InterfaceOnlyClassFilter());
  * </pre></blockquote>
