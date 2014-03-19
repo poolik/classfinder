@@ -1,6 +1,7 @@
 *.class
 settings.xml
 target/
+**.DS_Store
 .idea/
 *.iml
 
