@@ -7,9 +7,8 @@ filters to find only those that match some specific criteria.
 
 This library is based on https://github.com/bmc/javautil.
 I extracted the ```ClassFinder``` related portion of that library and updated
-it to work with asm 4.1 (there's binary incompatibility between asm 3.x and 4.x
-so this library didn't work together with projects that use asm 4.x). Also I added tests and fixed
-a couple of bugs.
+it to work with asm 4.1 (there's binary incompatibility between asm 3.x and 4.x).
+I then added tests and started refactoring / further development.
 
 #Filters
 The following filters are available:
