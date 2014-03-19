@@ -1,4 +1,5 @@
 #Classfinder
+[![Build Status](https://travis-ci.org/poolik/classfinder.png?branch=master)](https://travis-ci.org/poolik/classfinder)
 
 Classpath scanner to find / filter specific classes
 
