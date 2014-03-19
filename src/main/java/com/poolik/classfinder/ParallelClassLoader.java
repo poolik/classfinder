@@ -2,7 +2,7 @@ package com.poolik.classfinder;
 
 import com.poolik.classfinder.info.ClassInfo;
 import com.poolik.classfinder.info.FileUtil;
-import com.poolik.classfinder.io.*;
+import com.poolik.classfinder.io.DirUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.slf4j.Logger;
@@ -16,20 +16,40 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 
 public class ParallelClassLoader implements ClassLoader {
+  private static final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
   private static final Logger log = LoggerFactory.getLogger(ParallelClassLoader.class);
 
   @Override
   public Map<String, ClassInfo> loadClassesFrom(Collection<File> placesToSearch) {
-    HashMap<String, ClassInfo> foundClasses = new HashMap<>();
-    for (File file : placesToSearch) {
-      loadClassesIn(file, foundClasses);
+    final Map<String, ClassInfo> foundClasses = new ConcurrentHashMap<>();
+    try {
+      executor.invokeAll(getClassLoadJobs(placesToSearch, foundClasses));
+    } catch (InterruptedException e) {
+      log.error("Failed to load classes ", e);
     }
     return foundClasses;
+  }
+
+  private Collection<Callable<Void>> getClassLoadJobs(Collection<File> placesToSearch, final Map<String, ClassInfo> foundClasses) {
+    Collection<Callable<Void>> classLoadJobs = new ArrayList<>();
+    for (final File file : placesToSearch) {
+      classLoadJobs.add(new Callable<Void>() {
+        @Override
+        public Void call() throws Exception {
+          loadClassesIn(file, foundClasses);
+          return null;
+        }
+      });
+    }
+    return classLoadJobs;
   }
 
   private void loadClassesIn(File file, Map<String, ClassInfo> foundClasses) {
