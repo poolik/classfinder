@@ -47,6 +47,7 @@
 package com.poolik.classfinder;
 
 import com.poolik.classfinder.info.ClassInfo;
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
@@ -108,8 +109,7 @@ class ClassInfoClassVisitor extends EmptyVisitor {
         interfaces,
         access,
         location);
-    // Be sure to use the converted name from classInfo.getName(), not
-    // the internal value in "name".
+
     foundClasses.put(classInfo.getClassName(), classInfo);
     currentClass = classInfo;
   }
@@ -158,6 +158,12 @@ class ClassInfoClassVisitor extends EmptyVisitor {
       signature = name + description;
     return currentClass.visitMethod(access, name, description,
         signature, exceptions);
+  }
+
+  @Override
+  public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+    assert (currentClass != null);
+    return currentClass.visitAnnotation(desc, visible);
   }
 
   /**

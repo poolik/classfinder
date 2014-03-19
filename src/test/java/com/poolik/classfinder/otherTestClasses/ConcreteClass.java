@@ -1,8 +1,10 @@
 package com.poolik.classfinder.otherTestClasses;
 
 import com.poolik.classfinder.ClassFinderException;
+import com.poolik.classfinder.TestAnnotation;
 
 @Deprecated
+@TestAnnotation
 public class ConcreteClass extends AbstractClass {
 
   @Deprecated

@@ -24,6 +24,7 @@ The following filters are available:
 * Regex.java - matches classes by name
 * Interface.java - matches only interfaces
 * AbstractClass.java - matches only abstract classes
+* Annotated.java - matches classes that are annotated with the given annotation
 
 #Examples
 #### Find all non abstract non interface classes implementing ```SomeInterface``` in ```someFolder```
@@ -34,7 +35,7 @@ if you don't like them, you can always just create new ClassFilters directly
 ```java
 ClassFinder finder = new ClassFinder().add(someFolder);
 
-ClassFilter filter = new And.allOf(
+ClassFilter filter = And.allOf(
     Subclass.of(SomeInterface.class),
     Not.a(new Interface()),
     Not.a(new AbstractClass()));
@@ -47,11 +48,18 @@ Collection<ClassInfo> foundClasses = finder.findClasses(filter);
 ```java
 ClassFinder finder = new ClassFinder().addClasspath();
 
-ClassFilter filter = new Or.anyOf(
+ClassFilter filter = Or.anyOf(
     Subclass.of(TestCase.class),
     Regex.matches(".*Test$"));
 
 Collection<ClassInfo> testClasses = finder.findClasses(filter);
+```
+
+#### Find all ```@Deprecated``` classes in classpath
+
+```java
+ClassFinder finder = new ClassFinder().addClasspath();
+Collection<ClassInfo> deprecated = finder.findClasses(Annotated.with(Deprecated.class));
 ```
 
 #Acknowlegement

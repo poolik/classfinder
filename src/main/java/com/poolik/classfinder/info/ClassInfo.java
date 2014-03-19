@@ -48,16 +48,14 @@ package com.poolik.classfinder.info;
 
 import com.poolik.classfinder.ClassFinderException;
 import com.poolik.classfinder.EmptyVisitor;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -83,6 +81,7 @@ public class ClassInfo extends EmptyVisitor {
   private File locationFound = null;
   private Set<FieldInfo> fields = new HashSet<>();
   private Set<MethodInfo> methods = new HashSet<>();
+  private Set<AnnotationInfo> annotations = new HashSet<>();
 
   /**
    * Create a <tt>ClassInfo</tt> object from a file.
@@ -289,6 +288,12 @@ public class ClassInfo extends EmptyVisitor {
     return null;
   }
 
+  @Override
+  public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+    annotations.add(new AnnotationInfo(desc, visible));
+    return null;
+  }
+
   /**
    * Translate an internal class/interface name to an external one.
    *
@@ -381,5 +386,9 @@ public class ClassInfo extends EmptyVisitor {
       modifier |= Modifier.VOLATILE;
 
     return modifier;
+  }
+
+  public Set<AnnotationInfo> getAnnotations() {
+    return annotations;
   }
 }

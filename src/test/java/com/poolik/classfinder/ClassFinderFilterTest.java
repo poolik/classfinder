@@ -71,6 +71,13 @@ public class ClassFinderFilterTest extends TestWithTestClasses {
     assertThat(classes.size(), is(6));
   }
 
+  @Test
+  public void filtersByAnnotation() {
+    Collection<ClassInfo> classes = getClassFinder().findClasses(Annotated.with(Deprecated.class));
+    assertThat(classes.size(), is(1));
+    assertThat(classes.iterator().next().getAnnotations().size(), is(2));
+  }
+
   private ClassFinder getClassFinder() {
     ClassFinder classFinder = new ClassFinder();
     classFinder.add(new File[]{otherClassesFolder.toFile(), classesFolder.toFile()});
