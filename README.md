@@ -26,10 +26,10 @@ The following filters are available:
 * AbstractClass.java - matches only abstract classes
 
 #Examples
-* Find all non abstract non interface classes implementing ```SomeInterface``` in ```someFolder```
+#### Find all non abstract non interface classes implementing ```SomeInterface``` in ```someFolder```
 
-    NB! Note the use of simple factory methods, these are only for convenience and readability,
-    if you don't like them, you can always just create new ClassFilters directly
+NB! Note the use of simple factory methods, these are only for convenience and readability,
+if you don't like them, you can always just create new ClassFilters directly
 
 ```java
 ClassFinder finder = new ClassFinder().add(someFolder);
@@ -42,7 +42,7 @@ ClassFilter filter = new And.allOf(
 Collection<ClassInfo> foundClasses = finder.findClasses(filter);
 ```
 
-* Find all test classes in classpath
+#### Find all test classes in classpath
 
 ```java
 ClassFinder finder = new ClassFinder().addClasspath();
