@@ -111,15 +111,9 @@ public final class Or implements ClassFilter {
    * @return <tt>true</tt> if the name matches, <tt>false</tt> if it doesn't
    */
   public boolean accept(ClassInfo classInfo, ClassHierarchyResolver hierarchyResolver) {
-    boolean accepted = false;
-
-    if (filters.size() == 0) accepted = true;
-    else {
-      for (ClassFilter filter : filters) {
-        accepted = filter.accept(classInfo, hierarchyResolver);
-        if (accepted) break;
-      }
-    }
-    return accepted;
+    if (filters.size() == 0) return true;
+    else for (ClassFilter filter : filters)
+      if (filter.accept(classInfo, hierarchyResolver)) return true;
+    return false;
   }
 }
