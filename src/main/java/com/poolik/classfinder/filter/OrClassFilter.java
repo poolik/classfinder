@@ -46,12 +46,9 @@
 
 package com.poolik.classfinder.filter;
 
-import com.poolik.classfinder.ClassFinder;
 import com.poolik.classfinder.ClassHierarchyResolver;
 import com.poolik.classfinder.info.ClassInfo;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -78,7 +75,7 @@ import java.util.List;
  * @see com.poolik.classfinder.ClassFinder
  */
 public final class OrClassFilter implements ClassFilter {
-  private List<ClassFilter> filters = new LinkedList<ClassFilter>();
+  private List<ClassFilter> filters = new LinkedList<>();
 
   /**
    * Construct a new <tt>OrClassFilter</tt> with two contained filters.

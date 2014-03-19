@@ -48,10 +48,7 @@ package com.poolik.classfinder.filter;
 
 import com.poolik.classfinder.ClassHierarchyResolver;
 import com.poolik.classfinder.info.ClassInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -67,8 +64,7 @@ import java.util.Map;
  * @version <tt>$Revision$</tt>
  */
 public class SubclassClassFilter implements ClassFilter {
-  private static final Logger log = LoggerFactory.getLogger(SubclassClassFilter.class);
-  private Class baseClass;
+  private final Class baseClass;
 
   /**
    * Construct a new <tt>SubclassClassFilter</tt> that will accept

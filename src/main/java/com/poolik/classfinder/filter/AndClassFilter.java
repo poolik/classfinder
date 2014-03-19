@@ -75,7 +75,7 @@ import java.util.List;
  * @see com.poolik.classfinder.ClassFinder
  */
 public final class AndClassFilter implements ClassFilter {
-  private List<ClassFilter> filters = new LinkedList<ClassFilter>();
+  private List<ClassFilter> filters = new LinkedList<>();
 
   /**
    * Construct a new <tt>AndClassFilter</tt> with a set of contained

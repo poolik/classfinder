@@ -46,7 +46,6 @@
 
 package com.poolik.classfinder.filter;
 
-import com.poolik.classfinder.ClassFinder;
 import com.poolik.classfinder.ClassHierarchyResolver;
 import com.poolik.classfinder.info.ClassInfo;
 
