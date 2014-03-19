@@ -12,8 +12,8 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-public class JarClassPathentriesLoader implements AdditionalResourceLoader {
-  private static final Logger log = LoggerFactory.getLogger(JarClassPathentriesLoader.class);
+public class JarClasspathEntriesLoader implements AdditionalResourceLoader {
+  private static final Logger log = LoggerFactory.getLogger(JarClasspathEntriesLoader.class);
 
   @Override
   public boolean canLoadAdditional(File file) {
