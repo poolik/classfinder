@@ -7,7 +7,6 @@ import com.poolik.classfinder.filter.Interface;
 import com.poolik.classfinder.filter.Not;
 import com.poolik.classfinder.filter.Subclass;
 import com.poolik.classfinder.otherTestClasses.AbstractClass;
-import com.poolik.classfinder.otherTestClasses.ConcreteClass;
 import com.poolik.classfinder.otherTestClasses.SomeInterface;
 import org.junit.Test;
 
@@ -16,7 +15,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import static junit.framework.Assert.assertTrue;
-import static org.hamcrest.core.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -39,11 +37,7 @@ public class ClassInfoTest extends TestWithTestClasses {
   @Test
   public void findsCorrectFieldInfo() {
     Collection<ClassInfo> classes = getClassFinder().findClasses(new Subclass(AbstractClass.class));
-    assertThat(classes.size(), is(1));
-    ClassInfo info = classes.iterator().next();
-    assertThat(info.getClassName(), is(ConcreteClass.class.getName()));
-
-    Set<FieldInfo> fields = info.getFields();
+    Set<FieldInfo> fields = classes.iterator().next().getFields();
     assertThat(fields.size(), is(2));
     assertTrue(Modifier.isPrivate(getField("test", fields).getAccess()));
     assertTrue(Modifier.isPublic(getField("anotherValue", fields).getAccess()));
@@ -52,12 +46,8 @@ public class ClassInfoTest extends TestWithTestClasses {
   @Test
   public void findsCorrectMethodInfo() {
     Collection<ClassInfo> classes = getClassFinder().findClasses(new Subclass(AbstractClass.class));
-    assertThat(classes.size(), is(1));
-    ClassInfo info = classes.iterator().next();
-    assertThat(info.getClassName(), is(ConcreteClass.class.getName()));
+    Set<MethodInfo> methods = classes.iterator().next().getMethods();
 
-    Set<MethodInfo> methods = info.getMethods();
-    System.out.println(methods);
     assertThat(methods.size(), is(3));
     assertTrue(Modifier.isPrivate(getMethod("test", methods).getAccess()));
     assertTrue(Modifier.isPublic(getMethod("another", methods).getAccess()));

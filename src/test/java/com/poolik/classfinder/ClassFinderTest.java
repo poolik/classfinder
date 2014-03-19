@@ -55,9 +55,7 @@ public class ClassFinderTest extends TestWithTestClasses {
   @Test
   public void findsClassesFromDirectory() throws IOException, URISyntaxException {
     copyTestClassesExcludingZip();
-    ClassFinder classFinder = new ClassFinder();
-    classFinder.add(classesFolder.toFile());
-
+    ClassFinder classFinder = new ClassFinder().add(classesFolder.toFile());
     assertThat(classFinder.findClasses().size(), is(4));
   }
 
@@ -65,29 +63,27 @@ public class ClassFinderTest extends TestWithTestClasses {
   public void findsClassesFromNestedDirectories() throws IOException, URISyntaxException {
     DirUtils.deleteIfExists(classesFolder);
     copyTestClassesExcludingZip(classesFolder.resolve("child" + File.separator + "inner"));
-    ClassFinder classFinder = new ClassFinder();
-    classFinder.add(classesFolder.toFile());
+    Collection<ClassInfo> classes = new ClassFinder()
+        .add(classesFolder.toFile())
+        .findClasses();
 
-    Collection<ClassInfo> classes = classFinder.findClasses();
     assertThat(classes.size(), is(4));
   }
 
   @Test
   public void findsClassesFromManyDirectories() throws IOException, URISyntaxException {
     copyTestClassesExcludingZip();
-    ClassFinder classFinder = new ClassFinder();
-    classFinder.add(Arrays.asList(classesFolder.toFile(), otherClassesFolder.toFile()));
+    Collection<ClassInfo> classes = new ClassFinder()
+        .add(Arrays.asList(classesFolder.toFile(), otherClassesFolder.toFile()))
+        .findClasses();
 
-    Collection<ClassInfo> classes = classFinder.findClasses();
     assertThat(classes.size(), is(8));
   }
 
   @Test
   public void clearsPlacesToLook() throws IOException, URISyntaxException {
     copyTestClassesExcludingZip();
-    ClassFinder classFinder = new ClassFinder();
-    classFinder.add(classesFolder.toFile());
-
+    ClassFinder classFinder = new ClassFinder().add(classesFolder.toFile());
     assertThat(classFinder.findClasses().size(), is(4));
     classFinder.clear();
     assertThat(classFinder.findClasses().size(), is(0));
@@ -95,55 +91,44 @@ public class ClassFinderTest extends TestWithTestClasses {
 
   @Test
   public void looksForClassesWithinZipFilesOfDir() {
-    ClassFinder classFinder = new ClassFinder();
     createZipTo(classesFolder.toFile());
-    classFinder.add(classesFolder.toFile());
-
+    ClassFinder classFinder = new ClassFinder().add(classesFolder.toFile());
     assertThat(classFinder.findClasses().size(), is(5));
   }
 
   @Test
   public void looksForClassesWithinJarFilesOfDir() {
-    ClassFinder classFinder = new ClassFinder();
     createJarTo(classesFolder.toFile());
-    classFinder.add(classesFolder.toFile());
-
+    ClassFinder classFinder = new ClassFinder().add(classesFolder.toFile());
     assertThat(classFinder.findClasses().size(), is(5));
   }
 
   @Test
   public void findsClassesFromZip() {
-    ClassFinder classFinder = new ClassFinder();
-    classFinder.add(createZipTo(new File(getTestFolder())));
-
+    ClassFinder classFinder = new ClassFinder().add(createZipTo(new File(getTestFolder())));
     assertThat(classFinder.findClasses().size(), is(1));
   }
 
   @Test
   public void findsClassesFromJar() {
-    ClassFinder classFinder = new ClassFinder();
-    classFinder.add(createJarTo(new File(getTestFolder())));
-
+    ClassFinder classFinder = new ClassFinder().add(createJarTo(new File(getTestFolder())));
     assertThat(classFinder.findClasses().size(), is(1));
   }
 
   @Test
   public void findsClassesFromJarManifestClassPathJar() {
-    ClassFinder classFinder = new ClassFinder();
     createJarTo(new File(getTestFolder()));
     JavaArchive archive = ShrinkWrap.create(JavaArchive.class, "parent.jar")
         .addAsManifestResource(DEFAULT_MANIFEST_NAME);
     File target = new File(getTestFolder(), "parent.jar");
     archive.as(ZipExporter.class).exportTo(target, true);
-    classFinder.add(target);
 
-    Collection<ClassInfo> classes = classFinder.findClasses();
+    Collection<ClassInfo> classes = new ClassFinder().add(target).findClasses();
     assertThat(classes.size(), is(1));
   }
 
   @Test
   public void findsClassesFromJarManifestClassPathMultpleJars() {
-    ClassFinder classFinder = new ClassFinder();
     createJarToContaining(new File(getTestFolder()), TestInZip.class, "classes1.jar");
     createJarToContaining(new File(getTestFolder()), ConcreteClass.class, "classes2.jar");
 
@@ -151,28 +136,25 @@ public class ClassFinderTest extends TestWithTestClasses {
         .addAsManifestResource("MANIFEST_MULTIPLE.MF", DEFAULT_MANIFEST_NAME);
     File target = new File(getTestFolder(), "parent.jar");
     archive.as(ZipExporter.class).exportTo(target, true);
-    classFinder.add(target);
 
-    Collection<ClassInfo> classes = classFinder.findClasses();
+    Collection<ClassInfo> classes = new ClassFinder().add(target).findClasses();
     assertThat(classes.size(), is(2));
   }
 
   @Test
   public void findsClassesFromClassPath() {
-    System.setProperty("java.class.path", getTestFolder());
-    ClassFinder classFinder = new ClassFinder();
-    classFinder.addClasspath();
-    Collection<ClassInfo> classes = classFinder.findClasses(new Subclass(AbstractClass.class));
+    Collection<ClassInfo> classes = new ClassFinder()
+        .addClasspath()
+        .findClasses(new Subclass(AbstractClass.class));
 
     assertThat(classes.size(), is(1));
   }
 
   @Test(expected = ClassFinderException.class)
   public void throwsClassFinderExceptionIfNoResultsAndSetToThrow() {
-    ClassFinder classFinder = new ClassFinder();
-    classFinder.setErrorIfResultEmpty(true);
-
-    classFinder.findClasses();
+    new ClassFinder()
+        .setErrorIfResultEmpty(true)
+        .findClasses();
   }
 
   private void copyTestClassesExcludingZip() throws IOException, URISyntaxException {
