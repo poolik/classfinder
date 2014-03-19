@@ -4,6 +4,7 @@ import com.google.common.base.Predicate;
 import com.poolik.classfinder.filter.SubclassClassFilter;
 import com.poolik.classfinder.info.ClassInfo;
 import com.poolik.classfinder.otherTestClasses.AbstractClass;
+import com.poolik.classfinder.otherTestClasses.ConcreteClass;
 import com.poolik.classfinder.testClasses.TestInZip;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
@@ -128,6 +129,22 @@ public class ClassFinderTest extends TestWithTestClasses {
   }
 
   @Test
+  public void findsClassesFromJarManifestClassPathMultpleJars() {
+    ClassFinder classFinder = new ClassFinder();
+    createJarToContaining(new File(getTestFolder()), TestInZip.class, "classes1.jar");
+    createJarToContaining(new File(getTestFolder()), ConcreteClass.class, "classes2.jar");
+
+    JavaArchive archive = ShrinkWrap.create(JavaArchive.class, "parent.jar")
+        .addAsManifestResource("MANIFEST_MULTIPLE.MF", DEFAULT_MANIFEST_NAME);
+    File target = new File(getTestFolder(), "parent.jar");
+    archive.as(ZipExporter.class).exportTo(target, true);
+    classFinder.add(target);
+
+    Collection<ClassInfo> classes = classFinder.findClasses();
+    assertThat(classes.size(), is(2));
+  }
+
+  @Test
   public void findsClassesFromClassPath() {
     System.setProperty("java.class.path", getTestFolder());
     ClassFinder classFinder = new ClassFinder();
@@ -150,11 +167,15 @@ public class ClassFinderTest extends TestWithTestClasses {
   }
 
   private File createJarTo(File parent) {
-    JavaArchive archive = ShrinkWrap.create(JavaArchive.class, "classes.jar")
-        .addClass(TestInZip.class)
+    return createJarToContaining(parent, TestInZip.class, "classes.jar");
+  }
+
+  private File createJarToContaining(File parent, Class<?> clazz, String fileName) {
+    JavaArchive archive = ShrinkWrap.create(JavaArchive.class, fileName)
+        .addClass(clazz)
         .addManifest();
 
-    File target = new File(parent, "classes.jar");
+    File target = new File(parent, fileName);
     archive.as(ZipExporter.class).exportTo(
         target, true);
     return target;
