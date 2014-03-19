@@ -2,10 +2,9 @@ package com.poolik.classfinder.info;
 
 import com.poolik.classfinder.ClassFinder;
 import com.poolik.classfinder.TestWithTestClasses;
-import com.poolik.classfinder.filter.SubclassClassFilter;
+import com.poolik.classfinder.filter.Subclass;
 import com.poolik.classfinder.otherTestClasses.AbstractClass;
 import com.poolik.classfinder.otherTestClasses.ConcreteClass;
-import org.hamcrest.core.Is;
 import org.junit.Test;
 
 import java.lang.reflect.Modifier;
@@ -27,7 +26,7 @@ public class ClassInfoTest extends TestWithTestClasses {
 
   @Test
   public void findsCorrectFieldInfo() {
-    Collection<ClassInfo> classes = getClassFinder().findClasses(new SubclassClassFilter(AbstractClass.class));
+    Collection<ClassInfo> classes = getClassFinder().findClasses(new Subclass(AbstractClass.class));
     assertThat(classes.size(), is(1));
     ClassInfo info = classes.iterator().next();
     assertThat(info.getClassName(), is(ConcreteClass.class.getName()));
@@ -40,7 +39,7 @@ public class ClassInfoTest extends TestWithTestClasses {
 
   @Test
   public void findsCorrectMethodInfo() {
-    Collection<ClassInfo> classes = getClassFinder().findClasses(new SubclassClassFilter(AbstractClass.class));
+    Collection<ClassInfo> classes = getClassFinder().findClasses(new Subclass(AbstractClass.class));
     assertThat(classes.size(), is(1));
     ClassInfo info = classes.iterator().next();
     assertThat(info.getClassName(), is(ConcreteClass.class.getName()));

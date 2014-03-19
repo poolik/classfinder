@@ -49,47 +49,50 @@ package com.poolik.classfinder.filter;
 import com.poolik.classfinder.ClassHierarchyResolver;
 import com.poolik.classfinder.info.ClassInfo;
 
-import java.util.Map;
-
 /**
- * <p><tt>SubclassClassFilter</tt> is a {@link ClassFilter} that matches
- * class names that (a) can be loaded and (b) extend a given subclass or
- * implement a specified interface, directly or indirectly. It uses the
- * <tt>java.lang.Class.isAssignableFrom()</tt> method, so it actually has to
- * load each class it tests. For maximum flexibility, a
- * <tt>SubclassClassFilter</tt> can be configured to use a specific class
- * loader.</p>
+ * <p><tt>ClassModifiers</tt> is a {@link com.poolik.classfinder.filter.ClassFilter} that
+ * matches class names that (a) can be loaded and (b) match a set of class
+ * modifiers (as defined by the constants in the
+ * <tt>java.lang.reflect.Modifier</tt> class). For instance, the the
+ * following code fragment defines a filter that will match only public
+ * final classes:</p>
+ * 
+ * <blockquote><pre>
+ * import java.lang.reflect.Modifier;
+ * 
+ * ...
+ * 
+ * ClassFilter = new ClassModifiers (Modifier.PUBLIC | Modifier.FINAL);
+ * </pre></blockquote>
+ * 
+ * <p>This class relies on the pool of classes read by a
+ * {@link com.poolik.classfinder.ClassFinder}; it's not really useful by itself.</p>
  *
  * @author Copyright &copy; 2006 Brian M. Clapper
  * @version <tt>$Revision$</tt>
+ * @see com.poolik.classfinder.filter.ClassFilter
+ * @see com.poolik.classfinder.ClassFinder
+ * @see java.lang.reflect.Modifier
  */
-public class SubclassClassFilter implements ClassFilter {
-  private final Class baseClass;
+public class ClassModifiers implements ClassFilter {
 
-  /**
-   * Construct a new <tt>SubclassClassFilter</tt> that will accept
-   * only classes that extend the specified class or implement the
-   * specified interface.
-   *
-   * @param baseClassOrInterface the base class or interface
-   */
-  public SubclassClassFilter(Class baseClassOrInterface) {
-    this.baseClass = baseClassOrInterface;
+  private final int modifiers;
+  private final int excludeModifiers;
+
+  public ClassModifiers(int includeModifiers) {
+    super();
+    this.modifiers = includeModifiers;
+    this.excludeModifiers = 0;
   }
 
-  /**
-   * Perform the acceptance test on the loaded <tt>Class</tt> object.
-   *
-   * @return <tt>true</tt> if the class name matches,
-   * <tt>false</tt> if it doesn't
-   */
-  public boolean accept(ClassInfo classInfo, ClassHierarchyResolver hierarchyResolver) {
-    Map<String, ClassInfo> superClasses;
-    if (baseClass.isInterface())
-      superClasses = hierarchyResolver.findAllInterfaces(classInfo);
-    else
-      superClasses = hierarchyResolver.findAllSuperClasses(classInfo);
+  public ClassModifiers(int modifiers, int excludeModifiers) {
+    super();
+    this.modifiers = modifiers;
+    this.excludeModifiers = excludeModifiers;
+  }
 
-    return superClasses.keySet().contains(baseClass.getName());
+  public boolean accept(ClassInfo classInfo, ClassHierarchyResolver hierarchyResolver) {
+    return ((classInfo.getModifier() & modifiers) != 0)
+        && ((classInfo.getModifier() & excludeModifiers) == 0);
   }
 }

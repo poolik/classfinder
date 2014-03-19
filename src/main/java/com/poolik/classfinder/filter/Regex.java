@@ -49,50 +49,67 @@ package com.poolik.classfinder.filter;
 import com.poolik.classfinder.ClassHierarchyResolver;
 import com.poolik.classfinder.info.ClassInfo;
 
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 /**
- * <p><tt>ClassModifiersClassFilter</tt> is a {@link com.poolik.classfinder.filter.ClassFilter} that
- * matches class names that (a) can be loaded and (b) match a set of class
- * modifiers (as defined by the constants in the
- * <tt>java.lang.reflect.Modifier</tt> class). For instance, the the
- * following code fragment defines a filter that will match only public
- * final classes:</p>
+ * <p><tt>Regex</tt> is a {@link ClassFilter} that matches class
+ * names using a regular expression. Multiple regular expression filters
+ * can be combined using {@link And} and/or
+ * {@link Or} objects.</p>
  * 
- * <blockquote><pre>
- * import java.lang.reflect.Modifier;
+ * <p>This class does not have to load the classes it's filtering; it
+ * matches on the class name only.</p>
  * 
- * ...
- * 
- * ClassFilter = new ClassModifiersClassFilter (Modifier.PUBLIC | Modifier.FINAL);
- * </pre></blockquote>
- * 
- * <p>This class relies on the pool of classes read by a
- * {@link com.poolik.classfinder.ClassFinder}; it's not really useful by itself.</p>
+ * <p><tt>Regex</tt> uses the <tt>java.testClasses.regex</tt>
+ * regular expression classes.</p>
  *
  * @author Copyright &copy; 2006 Brian M. Clapper
  * @version <tt>$Revision$</tt>
- * @see com.poolik.classfinder.filter.ClassFilter
+ * @see ClassFilter
+ * @see And
+ * @see Or
+ * @see Not
  * @see com.poolik.classfinder.ClassFinder
- * @see java.lang.reflect.Modifier
  */
-public class ClassModifiersClassFilter implements ClassFilter {
+public class Regex implements ClassFilter {
 
-  private final int modifiers;
-  private final int excludeModifiers;
+  private Pattern pattern;
 
-  public ClassModifiersClassFilter(int includeModifiers) {
-    super();
-    this.modifiers = includeModifiers;
-    this.excludeModifiers = 0;
+  public static Regex matches(String pattern) {
+    return new Regex(pattern);
   }
 
-  public ClassModifiersClassFilter(int modifiers, int excludeModifiers) {
-    super();
-    this.modifiers = modifiers;
-    this.excludeModifiers = excludeModifiers;
+  public Regex(String regex)
+      throws PatternSyntaxException {
+    pattern = Pattern.compile(regex);
   }
 
+  /**
+   * Construct a new <tt>Regex</tt> using the specified
+   * pattern.
+   *
+   * @param regex      the regular expression to add
+   * @param regexFlags regular expression compilation flags (e.g.,
+   *                   <tt>Pattern.CASE_INSENSITIVE</tt>). See
+   *                   the Javadocs for <tt>java.testClasses.regex</tt> for
+   *                   legal values.
+   * @throws PatternSyntaxException bad regular expression
+   */
+  public Regex(String regex, int regexFlags)
+      throws PatternSyntaxException {
+    pattern = Pattern.compile(regex, regexFlags);
+  }
+
+  /**
+   * Determine whether a class name is to be accepted or not, based on
+   * the regular expression specified to the constructor.
+   *
+   * @param classInfo   the {@link com.poolik.classfinder.info.ClassInfo} object to test
+   * @return <tt>true</tt> if the class name matches,
+   * <tt>false</tt> if it doesn't
+   */
   public boolean accept(ClassInfo classInfo, ClassHierarchyResolver hierarchyResolver) {
-    return ((classInfo.getModifier() & modifiers) != 0)
-        && ((classInfo.getModifier() & excludeModifiers) == 0);
+    return pattern.matcher(classInfo.getClassName()).find();
   }
 }

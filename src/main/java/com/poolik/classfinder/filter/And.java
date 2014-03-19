@@ -53,16 +53,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * <p>An <tt>AndClassFilter</tt> logically ANDs other
+ * <p>An <tt>And</tt> logically ANDs other
  * {@link ClassFilter} objects. When its {@link #accept accept()}
- * method is called, the <tt>AndClassFilter</tt> object passes
+ * method is called, the <tt>And</tt> object passes
  * the class name through the contained filters. The class name is only
  * accepted if it is accepted by all contained filters. This
  * class conceptually provides a logical "AND" operator for class name
  * filters.</p>
  * 
  * <p>The contained filters are applied in the order they were added to
- * the <tt>AndClassFilter</tt> object. This class's
+ * the <tt>And</tt> object. This class's
  * {@link #accept accept()} method stops looping over the contained filters
  * as soon as it encounters one whose <tt>accept()</tt> method returns
  * <tt>false</tt> (implementing a "short-circuited AND" operation.) </p>
@@ -70,33 +70,23 @@ import java.util.List;
  * @author Copyright &copy; 2006 Brian M. Clapper
  * @version <tt>$Revision$</tt>
  * @see ClassFilter
- * @see OrClassFilter
- * @see NotClassFilter
+ * @see Or
+ * @see Not
  * @see com.poolik.classfinder.ClassFinder
  */
-public final class AndClassFilter implements ClassFilter {
+public final class And implements ClassFilter {
   private List<ClassFilter> filters = new LinkedList<>();
 
-  /**
-   * Construct a new <tt>AndClassFilter</tt> with a set of contained
-   * filters. Additional filters may be added later, via calls to the
-   * {@link #addFilter addFilter()} method.
-   *
-   * @param filters filters to add
-   */
-  public AndClassFilter(ClassFilter... filters) {
+  public static And allOf(ClassFilter... filters) {
+    return new And(filters);
+  }
+
+  public And(ClassFilter... filters) {
     for (ClassFilter filter : filters)
       addFilter(filter);
   }
 
-  /**
-   * Add a filter to the set of contained filters.
-   *
-   * @param filter the <tt>ClassFilter</tt> to add.
-   * @return this object, to permit chained calls.
-   * @see #removeFilter
-   */
-  public AndClassFilter addFilter(ClassFilter filter) {
+  public And addFilter(ClassFilter filter) {
     filters.add(filter);
     return this;
   }
@@ -108,7 +98,7 @@ public final class AndClassFilter implements ClassFilter {
    * @param filter the <tt>ClassFilter</tt> to remove.
    * @see #addFilter
    */
-  public AndClassFilter removeFilter(ClassFilter filter) {
+  public And removeFilter(ClassFilter filter) {
     filters.remove(filter);
     return this;
   }

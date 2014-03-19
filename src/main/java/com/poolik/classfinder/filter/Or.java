@@ -53,16 +53,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * <p>An <tt>OrClassFilter</tt> contains logically ORs other
+ * <p>An <tt>Or</tt> contains logically ORs other
  * {@link ClassFilter} objects. When its {@link #accept accept()}
- * method is called, the <tt>OrClassFilter</tt> object passes
+ * method is called, the <tt>Or</tt> object passes
  * the class name through the contained filters. The class name is
  * accepted if it is accepted by any one of the contained filters. This
  * class conceptually provides a logical "OR" operator for class name
  * filters.</p>
  * 
  * <p>The contained filters are applied in the order they were added to
- * the <tt>OrClassFilter</tt> object. This class's
+ * the <tt>Or</tt> object. This class's
  * {@link #accept accept()} method stops looping over the contained filters
  * as soon as it encounters one whose <tt>accept()</tt> method returns
  * <tt>true</tt> (implementing a "short-circuited OR" operation.) </p>
@@ -70,45 +70,28 @@ import java.util.List;
  * @author Copyright &copy; 2006 Brian M. Clapper
  * @version <tt>$Revision$</tt>
  * @see ClassFilter
- * @see OrClassFilter
- * @see NotClassFilter
+ * @see Or
+ * @see Not
  * @see com.poolik.classfinder.ClassFinder
  */
-public final class OrClassFilter implements ClassFilter {
+public final class Or implements ClassFilter {
   private List<ClassFilter> filters = new LinkedList<>();
 
-  /**
-   * Construct a new <tt>OrClassFilter</tt> with two contained filters.
-   * Additional filters may be added later, via calls to the
-   * {@link #addFilter addFilter()} method.
-   *
-   * @param filters filters to add
-   */
-  public OrClassFilter(ClassFilter... filters) {
+  public static Or anyOf(ClassFilter... filters) {
+    return new Or(filters);
+  }
+
+  public Or(ClassFilter... filters) {
     for (ClassFilter filter : filters)
       addFilter(filter);
   }
 
-  /**
-   * Add a filter to the set of contained filters.
-   *
-   * @param filter the <tt>ClassFilter</tt> to add.
-   * @return this object, to permit chained calls.
-   * @see #removeFilter
-   */
-  public OrClassFilter addFilter(ClassFilter filter) {
+  public Or addFilter(ClassFilter filter) {
     filters.add(filter);
     return this;
   }
 
-  /**
-   * Remove a filter from the set of contained filters.
-   *
-   *
-   * @param filter the <tt>ClassFilter</tt> to remove.
-   * @see #addFilter
-   */
-  public OrClassFilter removeFilter(ClassFilter filter) {
+  public Or removeFilter(ClassFilter filter) {
     filters.remove(filter);
     return this;
   }

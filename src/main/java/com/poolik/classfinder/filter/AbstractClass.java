@@ -46,73 +46,30 @@
 
 package com.poolik.classfinder.filter;
 
-import com.poolik.classfinder.ClassHierarchyResolver;
-import com.poolik.classfinder.info.ClassInfo;
-
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import java.lang.reflect.Modifier;
 
 /**
- * <p><tt>RegexClassFilter</tt> is a {@link ClassFilter} that matches class
- * names using a regular expression. Multiple regular expression filters
- * can be combined using {@link AndClassFilter} and/or
- * {@link OrClassFilter} objects.</p>
- * 
- * <p>This class does not have to load the classes it's filtering; it
- * matches on the class name only.</p>
- * 
- * <p><tt>RegexClassFilter</tt> uses the <tt>java.testClasses.regex</tt>
- * regular expression classes.</p>
+ * <p><tt>AbstractClass</tt> implements a {@link ClassFilter}
+ * that matches class names that (a) can be loaded and (b) are abstract. It
+ * relies on the pool of classes read by a {@link com.poolik.classfinder.ClassFinder}; it's
+ * not really useful by itself.</p>
+ *
+ * <p>This class is really just a convenient specialization of the
+ * {@link ClassModifiers} class.</p>
  *
  * @author Copyright &copy; 2006 Brian M. Clapper
  * @version <tt>$Revision$</tt>
  * @see ClassFilter
- * @see AndClassFilter
- * @see OrClassFilter
- * @see NotClassFilter
+ * @see ClassModifiers
  * @see com.poolik.classfinder.ClassFinder
+ * @see Modifier
  */
-public class RegexClassFilter implements ClassFilter {
-
-  private Pattern pattern;
-
+public class AbstractClass extends ClassModifiers {
   /**
-   * Construct a new <tt>RegexClassFilter</tt> using the specified
-   * pattern.
-   *
-   * @param regex the regular expression to add
-   * @throws PatternSyntaxException bad regular expression
+   * Construct a new <tt>AbstractClass</tt> that will accept
+   * only abstract classes (no interfaces).
    */
-  public RegexClassFilter(String regex)
-      throws PatternSyntaxException {
-    pattern = Pattern.compile(regex);
-  }
-
-  /**
-   * Construct a new <tt>RegexClassFilter</tt> using the specified
-   * pattern.
-   *
-   * @param regex      the regular expression to add
-   * @param regexFlags regular expression compilation flags (e.g.,
-   *                   <tt>Pattern.CASE_INSENSITIVE</tt>). See
-   *                   the Javadocs for <tt>java.testClasses.regex</tt> for
-   *                   legal values.
-   * @throws PatternSyntaxException bad regular expression
-   */
-  public RegexClassFilter(String regex, int regexFlags)
-      throws PatternSyntaxException {
-    pattern = Pattern.compile(regex, regexFlags);
-  }
-
-  /**
-   * Determine whether a class name is to be accepted or not, based on
-   * the regular expression specified to the constructor.
-   *
-   * @param classInfo   the {@link com.poolik.classfinder.info.ClassInfo} object to test
-   * @return <tt>true</tt> if the class name matches,
-   * <tt>false</tt> if it doesn't
-   */
-  public boolean accept(ClassInfo classInfo, ClassHierarchyResolver hierarchyResolver) {
-    return pattern.matcher(classInfo.getClassName()).find();
+  public AbstractClass() {
+    super(Modifier.ABSTRACT, Modifier.INTERFACE);
   }
 }

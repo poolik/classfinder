@@ -1,6 +1,6 @@
 package com.poolik.classfinder;
 
-import com.poolik.classfinder.filter.SubclassClassFilter;
+import com.poolik.classfinder.filter.Subclass;
 import com.poolik.classfinder.info.ClassInfo;
 import com.poolik.classfinder.io.DirUtils;
 import com.poolik.classfinder.io.Predicate;
@@ -161,8 +161,8 @@ public class ClassFinderTest extends TestWithTestClasses {
   public void findsClassesFromClassPath() {
     System.setProperty("java.class.path", getTestFolder());
     ClassFinder classFinder = new ClassFinder();
-    classFinder.addClassPath();
-    Collection<ClassInfo> classes = classFinder.findClasses(new SubclassClassFilter(AbstractClass.class));
+    classFinder.addClasspath();
+    Collection<ClassInfo> classes = classFinder.findClasses(new Subclass(AbstractClass.class));
 
     assertThat(classes.size(), is(1));
   }

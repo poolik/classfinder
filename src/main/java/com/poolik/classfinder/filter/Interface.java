@@ -46,51 +46,27 @@
 
 package com.poolik.classfinder.filter;
 
-import com.poolik.classfinder.ClassHierarchyResolver;
-import com.poolik.classfinder.info.ClassInfo;
+import java.lang.reflect.Modifier;
 
 /**
- * <tt>NotClassFilter</tt> is a {@link ClassFilter} that
- * wraps another {@link ClassFilter} and negates the sense of the
- * wrapped filter's {@link ClassFilter#accept accept()} method. This
- * class conceptually provides a logical "NOT" operator for class name
- * filters. For example, the following code fragment will create a filter
- * that finds all classes that are not interfaces.
- *
- * <blockquote><pre>
- * NotClassFilter filter = new NotClassFilter (new InterfaceOnlyClassFilter());
- * </pre></blockquote>
+ * <p><tt>Interface</tt> implements a {@link ClassFilter}
+ * that matches class names that (a) can be loaded and (b) are interfaces. It
+ * relies on the pool of classes read by a {@link com.poolik.classfinder.ClassFinder}; it's
+ * not really useful by itself.</p>
+ * 
+ * <p>This class is really just a convenient specialization of the
+ * {@link ClassModifiers} class.</p>
  *
  * @author Copyright &copy; 2006 Brian M. Clapper
  * @version <tt>$Revision$</tt>
- * @see ClassFilter
- * @see AndClassFilter
- * @see OrClassFilter
- * @see com.poolik.classfinder.ClassFinder
- * @see InterfaceOnlyClassFilter
  */
-public class NotClassFilter implements ClassFilter {
-  private ClassFilter filter;
+public class Interface extends ClassModifiers {
 
   /**
-   * Create a new <tt>NotClassFilter</tt> that wraps the
-   * specified {@link ClassFilter}.
-   *
-   * @param filter The {@link ClassFilter} to wrap.
+   * Construct a new <tt>Interface</tt> that will accept
+   * only classes that are interfaces.
    */
-  public NotClassFilter(ClassFilter filter) {
-    this.filter = filter;
-  }
-
-  /**
-   * Tests whether a class name should be included in a class name
-   * list.
-   *
-   * @param classInfo   the {@link com.poolik.classfinder.info.ClassInfo} object to test
-   * @return <tt>true</tt> if and only if the name should be included
-   * in the list; <tt>false</tt> otherwise
-   */
-  public boolean accept(ClassInfo classInfo, ClassHierarchyResolver hierarchyResolver) {
-    return !this.filter.accept(classInfo, hierarchyResolver);
+  public Interface() {
+    super(Modifier.INTERFACE);
   }
 }

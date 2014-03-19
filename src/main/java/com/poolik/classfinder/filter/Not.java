@@ -46,30 +46,49 @@
 
 package com.poolik.classfinder.filter;
 
-import java.lang.reflect.Modifier;
+import com.poolik.classfinder.ClassHierarchyResolver;
+import com.poolik.classfinder.info.ClassInfo;
 
 /**
- * <p><tt>AbstractClassFilter</tt> implements a {@link ClassFilter}
- * that matches class names that (a) can be loaded and (b) are abstract. It
- * relies on the pool of classes read by a {@link com.poolik.classfinder.ClassFinder}; it's
- * not really useful by itself.</p>
+ * <tt>Not</tt> is a {@link ClassFilter} that
+ * wraps another {@link ClassFilter} and negates the sense of the
+ * wrapped filter's {@link ClassFilter#accept accept()} method. This
+ * class conceptually provides a logical "NOT" operator for class name
+ * filters. For example, the following code fragment will create a filter
+ * that finds all classes that are not interfaces.
  *
- * <p>This class is really just a convenient specialization of the
- * {@link ClassModifiersClassFilter} class.</p>
+ * <blockquote><pre>
+ * Not filter = new Not (new Interface());
+ * </pre></blockquote>
  *
  * @author Copyright &copy; 2006 Brian M. Clapper
  * @version <tt>$Revision$</tt>
  * @see ClassFilter
- * @see ClassModifiersClassFilter
+ * @see And
+ * @see Or
  * @see com.poolik.classfinder.ClassFinder
- * @see Modifier
+ * @see Interface
  */
-public class AbstractClassFilter extends ClassModifiersClassFilter {
+public class Not implements ClassFilter {
+  private ClassFilter filter;
+
+  public static Not a(ClassFilter filter) {
+    return new Not(filter);
+  }
+
+  public Not(ClassFilter filter) {
+    this.filter = filter;
+  }
+
   /**
-   * Construct a new <tt>AbstractClassFilter</tt> that will accept
-   * only abstract classes (no interfaces).
+   * Tests whether a class name should be included in a class name
+   * list.
+   *
+   * @param classInfo   the {@link com.poolik.classfinder.info.ClassInfo} object to test
+   * @return <tt>true</tt> if and only if the name should be included
+   * in the list; <tt>false</tt> otherwise
    */
-  public AbstractClassFilter() {
-    super(Modifier.ABSTRACT, Modifier.INTERFACE);
+  public boolean accept(ClassInfo classInfo, ClassHierarchyResolver hierarchyResolver) {
+    return !this.filter.accept(classInfo, hierarchyResolver);
   }
 }

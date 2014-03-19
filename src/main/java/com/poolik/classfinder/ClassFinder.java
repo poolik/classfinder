@@ -61,7 +61,7 @@ import static com.poolik.classfinder.info.FileUtil.fileCanContainClasses;
 /**
  * <p>A <tt>ClassFinder</tt> object is used to find classes. By default, an
  * instantiated <tt>ClassFinder</tt> won't find any classes; you have to
- * add the classpath (via a call to {@link #addClassPath}), add jar files,
+ * add the classpath (via a call to {@link #addClasspath}), add jar files,
  * add zip files, and/or add directories to the <tt>ClassFinder</tt> so it
  * knows where to look. Adding a jar file to a <tt>ClassFinder</tt> causes
  * the <tt>ClassFinder</tt> to look at the jar's manifest for a
@@ -76,7 +76,7 @@ import static com.poolik.classfinder.info.FileUtil.fileCanContainClasses;
  * implementations, including:</p>
  *
  * <ul>
- * <li>A {@link com.poolik.classfinder.filter.RegexClassFilter} for filtering class names on a regular
+ * <li>A {@link com.poolik.classfinder.filter.Regex} for filtering class names on a regular
  * expression
  * <li>Filters for testing various class attributes (such as whether a
  * class is an interface, or a subclass of a known class, etc.
@@ -100,15 +100,10 @@ import static com.poolik.classfinder.info.FileUtil.fileCanContainClasses;
  *             finder.add(new File(arg));
  *
  *         ClassFilter filter =
- *             new AndClassFilter
- *                 // Must not be an interface
- *                 (new NotClassFilter (new InterfaceOnlyClassFilter()),
- *
- *                 // Must implement the ClassFilter interface
- *                 new SubclassClassFilter (ClassFilter.class),
- *
- *                 // Must not be abstract
- *                 new NotClassFilter (new AbstractClassFilter()));
+ *             And.allOf(
+ *                Not.a(new Interface()),
+ *                Subclass.of(ClassFilter.class),
+ *                Not.a(new AbstractClass()));
  *
  *         Collection&lt;ClassInfo&gt; foundClasses = finder.findClasses(filter);
  *
@@ -128,7 +123,7 @@ import static com.poolik.classfinder.info.FileUtil.fileCanContainClasses;
  * @author Copyright &copy; 2006 Brian M. Clapper
  * @version <tt>$Revision$</tt>
  */
-public class  ClassFinder {
+public class ClassFinder {
 
   private Map<String, File> placesToSearch = new LinkedHashMap<>();
   private static Collection<AdditionalResourceLoader> resourceLoaders = Arrays.<AdditionalResourceLoader>asList(new JarClasspathEntriesLoader());
@@ -138,7 +133,7 @@ public class  ClassFinder {
   /**
    * Add the contents of the system classpath for classes.
    */
-  public void addClassPath() {
+  public ClassFinder addClasspath() {
     try {
       String path = System.getProperty("java.class.path");
       StringTokenizer tok = new StringTokenizer(path, File.pathSeparator);
@@ -147,6 +142,7 @@ public class  ClassFinder {
     } catch (Exception ex) {
       log.error("Unable to get class path", ex);
     }
+    return this;
   }
 
   /**

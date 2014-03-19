@@ -2,7 +2,6 @@ package com.poolik.classfinder;
 
 import com.poolik.classfinder.filter.*;
 import com.poolik.classfinder.info.ClassInfo;
-import com.poolik.classfinder.otherTestClasses.AbstractClass;
 import com.poolik.classfinder.otherTestClasses.ConcreteClass;
 import com.poolik.classfinder.otherTestClasses.SomeInterface;
 import com.poolik.classfinder.testClasses.TestClass1;
@@ -19,56 +18,56 @@ public class ClassFinderFilterTest extends TestWithTestClasses {
 
   @Test
   public void filtersInterfaces() {
-    Collection<ClassInfo> classes = getClassFinder().findClasses(new InterfaceOnlyClassFilter());
+    Collection<ClassInfo> classes = getClassFinder().findClasses(new Interface());
     assertThat(classes.size(), is(1));
     assertThat(classes.iterator().next().getClassName(), is(SomeInterface.class.getName()));
   }
 
   @Test
   public void filtersAbstractClasses() {
-    Collection<ClassInfo> classes = getClassFinder().findClasses(new AbstractClassFilter());
+    Collection<ClassInfo> classes = getClassFinder().findClasses(new AbstractClass());
 
     assertThat(classes.size(), is(1));
-    assertThat(classes.iterator().next().getClassName(), is(AbstractClass.class.getName()));
+    assertThat(classes.iterator().next().getClassName(), is(com.poolik.classfinder.otherTestClasses.AbstractClass.class.getName()));
   }
 
   @Test
   public void filtersByClassNameRegex() {
-    Collection<ClassInfo> classes = getClassFinder().findClasses(new RegexClassFilter(".*\\d$"));
+    Collection<ClassInfo> classes = getClassFinder().findClasses(new Regex(".*\\d$"));
     assertThat(classes.size(), is(3));
   }
 
   @Test
   public void filtersSubclassesOfAbstractClass() {
-    Collection<ClassInfo> classes = getClassFinder().findClasses(new SubclassClassFilter(AbstractClass.class));
+    Collection<ClassInfo> classes = getClassFinder().findClasses(new Subclass(com.poolik.classfinder.otherTestClasses.AbstractClass.class));
     assertThat(classes.size(), is(1));
     assertThat(classes.iterator().next().getClassName(), is(ConcreteClass.class.getName()));
   }
 
   @Test
   public void filtersSubclassesOfInterface() {
-    Collection<ClassInfo> classes = getClassFinder().findClasses(new SubclassClassFilter(SomeInterface.class));
+    Collection<ClassInfo> classes = getClassFinder().findClasses(new Subclass(SomeInterface.class));
     assertThat(classes.size(), is(3));
   }
 
   @Test
   public void combinesFiltersWithAnd() {
-    Collection<ClassInfo> classes = getClassFinder().findClasses(new AndClassFilter(new SubclassClassFilter(SomeInterface.class), new AbstractClassFilter()));
+    Collection<ClassInfo> classes = getClassFinder().findClasses(new And(new Subclass(SomeInterface.class), new AbstractClass()));
     assertThat(classes.size(), is(1));
-    assertThat(classes.iterator().next().getClassName(), is(AbstractClass.class.getName()));
+    assertThat(classes.iterator().next().getClassName(), is(com.poolik.classfinder.otherTestClasses.AbstractClass.class.getName()));
   }
 
   @Test
   public void combinesFiltersWithOr() {
-    Collection<ClassInfo> classes = getClassFinder().findClasses(new OrClassFilter(new RegexClassFilter(".*1$"), new AbstractClassFilter()));
+    Collection<ClassInfo> classes = getClassFinder().findClasses(new Or(new Regex(".*1$"), new AbstractClass()));
     assertThat(classes.size(), is(2));
-    assertThat(classes.iterator().next().getClassName(), anyOf(is(TestClass1.class.getName()), is(AbstractClass.class.getName())));
-    assertThat(classes.iterator().next().getClassName(), anyOf(is(TestClass1.class.getName()), is(AbstractClass.class.getName())));
+    assertThat(classes.iterator().next().getClassName(), anyOf(is(TestClass1.class.getName()), is(com.poolik.classfinder.otherTestClasses.AbstractClass.class.getName())));
+    assertThat(classes.iterator().next().getClassName(), anyOf(is(TestClass1.class.getName()), is(com.poolik.classfinder.otherTestClasses.AbstractClass.class.getName())));
   }
 
   @Test
   public void invertsFilterWithNot() {
-    Collection<ClassInfo> classes = getClassFinder().findClasses(new NotClassFilter(new RegexClassFilter(".*\\d$")));
+    Collection<ClassInfo> classes = getClassFinder().findClasses(new Not(new Regex(".*\\d$")));
     assertThat(classes.size(), is(6));
   }
 

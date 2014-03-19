@@ -46,27 +46,47 @@
 
 package com.poolik.classfinder.filter;
 
-import java.lang.reflect.Modifier;
+import com.poolik.classfinder.ClassHierarchyResolver;
+import com.poolik.classfinder.info.ClassInfo;
+
+import java.util.Map;
 
 /**
- * <p><tt>InterfaceOnlyClassFilter</tt> implements a {@link ClassFilter}
- * that matches class names that (a) can be loaded and (b) are interfaces. It
- * relies on the pool of classes read by a {@link com.poolik.classfinder.ClassFinder}; it's
- * not really useful by itself.</p>
- * 
- * <p>This class is really just a convenient specialization of the
- * {@link ClassModifiersClassFilter} class.</p>
+ * <p><tt>Subclass</tt> is a {@link ClassFilter} that matches
+ * class names that (a) can be loaded and (b) extend a given subclass or
+ * implement a specified interface, directly or indirectly. It uses the
+ * <tt>java.lang.Class.isAssignableFrom()</tt> method, so it actually has to
+ * load each class it tests. For maximum flexibility, a
+ * <tt>Subclass</tt> can be configured to use a specific class
+ * loader.</p>
  *
  * @author Copyright &copy; 2006 Brian M. Clapper
  * @version <tt>$Revision$</tt>
  */
-public class InterfaceOnlyClassFilter extends ClassModifiersClassFilter {
+public class Subclass implements ClassFilter {
+  private final Class baseClass;
+
+  public static Subclass of(Class baseClassOrInterface) {
+    return new Subclass(baseClassOrInterface);
+  }
+
+  public Subclass(Class baseClassOrInterface) {
+    this.baseClass = baseClassOrInterface;
+  }
 
   /**
-   * Construct a new <tt>InterfaceOnlyClassFilter</tt> that will accept
-   * only classes that are interfaces.
+   * Perform the acceptance test on the loaded <tt>Class</tt> object.
+   *
+   * @return <tt>true</tt> if the class name matches,
+   * <tt>false</tt> if it doesn't
    */
-  public InterfaceOnlyClassFilter() {
-    super(Modifier.INTERFACE);
+  public boolean accept(ClassInfo classInfo, ClassHierarchyResolver hierarchyResolver) {
+    Map<String, ClassInfo> superClasses;
+    if (baseClass.isInterface())
+      superClasses = hierarchyResolver.findAllInterfaces(classInfo);
+    else
+      superClasses = hierarchyResolver.findAllSuperClasses(classInfo);
+
+    return superClasses.keySet().contains(baseClass.getName());
   }
 }
