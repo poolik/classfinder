@@ -1,8 +1,9 @@
 package com.poolik.classfinder;
 
-import com.google.common.base.Predicate;
 import com.poolik.classfinder.filter.SubclassClassFilter;
 import com.poolik.classfinder.info.ClassInfo;
+import com.poolik.classfinder.io.DirUtils;
+import com.poolik.classfinder.io.Predicate;
 import com.poolik.classfinder.otherTestClasses.AbstractClass;
 import com.poolik.classfinder.otherTestClasses.ConcreteClass;
 import com.poolik.classfinder.testClasses.TestInZip;
@@ -50,6 +51,7 @@ public class ClassFinderTest extends TestWithTestClasses {
   public void restoreClasspath() {
     System.setProperty("java.class.path", classPath);
   }
+
   @Test
   public void findsClassesFromDirectory() throws IOException, URISyntaxException {
     copyTestClassesExcludingZip();
@@ -57,6 +59,17 @@ public class ClassFinderTest extends TestWithTestClasses {
     classFinder.add(classesFolder.toFile());
 
     assertThat(classFinder.findClasses().size(), is(4));
+  }
+
+  @Test
+  public void findsClassesFromNestedDirectories() throws IOException, URISyntaxException {
+    DirUtils.deleteIfExists(classesFolder);
+    copyTestClassesExcludingZip(classesFolder.resolve("child" + File.separator + "inner"));
+    ClassFinder classFinder = new ClassFinder();
+    classFinder.add(classesFolder.toFile());
+
+    Collection<ClassInfo> classes = classFinder.findClasses();
+    assertThat(classes.size(), is(4));
   }
 
   @Test
@@ -166,6 +179,10 @@ public class ClassFinderTest extends TestWithTestClasses {
     copyClasses("/com/poolik/classfinder/testClasses", classesFolder, excludeZip);
   }
 
+  private void copyTestClassesExcludingZip(Path to) throws IOException, URISyntaxException {
+    copyClasses("/com/poolik/classfinder/testClasses", to, excludeZip);
+  }
+
   private File createJarTo(File parent) {
     return createJarToContaining(parent, TestInZip.class, "classes.jar");
   }
@@ -176,8 +193,7 @@ public class ClassFinderTest extends TestWithTestClasses {
         .addManifest();
 
     File target = new File(parent, fileName);
-    archive.as(ZipExporter.class).exportTo(
-        target, true);
+    archive.as(ZipExporter.class).exportTo(target, true);
     return target;
   }
 

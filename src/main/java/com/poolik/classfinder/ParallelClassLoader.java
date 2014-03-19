@@ -7,15 +7,18 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zeroturnaround.zip.ZipEntryCallback;
+import org.zeroturnaround.zip.ZipUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
-import java.util.jar.JarFile;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 public class ParallelClassLoader implements ClassLoader {
   private static final Logger log = LoggerFactory.getLogger(ParallelClassLoader.class);
@@ -31,80 +34,32 @@ public class ParallelClassLoader implements ClassLoader {
 
   private void loadClassesIn(File file, Map<String, ClassInfo> foundClasses) {
     String name = file.getPath();
-
     log.info("Finding classes in " + name);
-    if (FileUtil.isJar(name))
-      processJar(name, foundClasses);
-    else if (FileUtil.isZip(name))
+    if (FileUtil.isJar(name) || FileUtil.isZip(name))
       processZip(name, foundClasses);
     else
       processDirectory(file, foundClasses);
   }
 
-  private void processJar(String jarName,
-                          Map<String, ClassInfo> foundClasses) {
-    JarFile jar = null;
-    try {
-      jar = new JarFile(jarName);
-      File jarFile = new File(jarName);
-      processOpenZip(jar, jarFile,
-          new ClassInfoClassVisitor(foundClasses, jarFile));
-    } catch (IOException ex) {
-      log.error("Can't open jar file \"" + jarName + "\"", ex);
-    } finally {
-      try {
-        if (jar != null) jar.close();
-      } catch (IOException ex) {
-        log.error("Can't close " + jarName, ex);
-      }
-    }
-  }
 
-  private void processZip(String zipName,
-                          Map<String, ClassInfo> foundClasses) {
-    ZipFile zip = null;
-
-    try {
-      zip = new ZipFile(zipName);
-      File zipFile = new File(zipName);
-      processOpenZip(zip, zipFile,
-          new ClassInfoClassVisitor(foundClasses, zipFile));
-    } catch (IOException ex) {
-      log.error("Can't open jar file \"" + zipName + "\"", ex);
-    } finally {
-      try {
-        if (zip != null) zip.close();
-      } catch (IOException ex) {
-        log.error("Can't close " + zipName, ex);
-      }
-    }
-  }
-
-  private void processOpenZip(ZipFile zip,
-                              File zipFile,
-                              ClassVisitor classVisitor) {
-    String zipName = zipFile.getPath();
-    for (Enumeration<? extends ZipEntry> e = zip.entries();
-         e.hasMoreElements(); ) {
-      ZipEntry entry = e.nextElement();
-
-      if ((!entry.isDirectory()) &&
-          (entry.getName().toLowerCase().endsWith(".class"))) {
-        try {
-          log.trace("Loading " + zipName + "(" + entry.getName() +
-              ")");
-          loadClassData(zip.getInputStream(entry), classVisitor);
-        } catch (IOException | ClassFinderException ex) {
-          log.error("Can't open \"" + entry.getName() +
-                  "\" in zip file \"" + zipName + "\": ",
-              ex);
+  private void processZip(final String zipName,
+                          final Map<String, ClassInfo> foundClasses) {
+    final File zip = new File(zipName);
+    ZipUtil.iterate(zip, new ZipEntryCallback() {
+      public void process(InputStream in, ZipEntry zipEntry) throws IOException {
+        if ((!zipEntry.isDirectory()) && (zipEntry.getName().endsWith(".class"))) {
+          try {
+            log.trace("Loading " + zipName + "(" + zipEntry.getName() + ")");
+            loadClassData(in, new ClassInfoClassVisitor(foundClasses, zip));
+          } catch (ClassFinderException ex) {
+            log.error("Can't open \"" + zipEntry.getName() + "\" in file \"" + zipName + "\": ", ex);
+          }
         }
       }
-    }
+    });
   }
 
-  private void processDirectory(File dir,
-                                Map<String, ClassInfo> foundClasses) {
+  private void processDirectory(File dir, Map<String, ClassInfo> foundClasses) {
     loadAllClassFilesInDir(dir, foundClasses);
     loadAllJarFilesInDir(dir, foundClasses);
     loadAllZipFilesInDir(dir, foundClasses);
@@ -119,48 +74,30 @@ public class ParallelClassLoader implements ClassLoader {
   }
 
   private void loadAllFilesWithSuffixInDir(File dir, String suffix, Map<String, ClassInfo> foundClasses) {
-    Collection<File> jarFiles = filterFilesBySuffix(dir, suffix);
-    for (File jarFile : jarFiles) {
-      loadClassesIn(jarFile, foundClasses);
+    for (File file : filterFilesBySuffix(dir, suffix)) {
+      loadClassesIn(file, foundClasses);
     }
   }
 
   private void loadAllClassFilesInDir(File dir, Map<String, ClassInfo> foundClasses) {
-    Collection<File> files = filterFilesBySuffix(dir, ".class");
-
-    ClassVisitor classVisitor = new ClassInfoClassVisitor(foundClasses,
-        dir);
-
-    for (File f : files) {
-      String path = f.getPath();
-      log.trace("Loading " + f.getPath());
-      InputStream is = null;
-      try {
-        is = new FileInputStream(f);
-        loadClassData(is, classVisitor);
+    for (File classFile : filterFilesBySuffix(dir, ".class")) {
+      String path = classFile.getPath();
+      log.trace("Loading " + classFile.getPath());
+      try (InputStream is = new FileInputStream(classFile)) {
+        loadClassData(is, new ClassInfoClassVisitor(foundClasses, dir));
       } catch (IOException | ClassFinderException ex) {
-        log.error("Can't open \"" + path + "\": ", ex);
-      } finally {
-        if (is != null) {
-          try {
-            is.close();
-          } catch (IOException ex) {
-            log.error("Can't close InputStream for \"" +
-                    path + "\"",
-                ex);
-          }
-        }
+        log.error("Can't open '" + path + "': ", ex);
       }
     }
   }
 
   private Collection<File> filterFilesBySuffix(File dir, String suffix) {
-    RecursiveFileFinder finder = new RecursiveFileFinder();
-    RegexFileFilter nameFilter = new RegexFileFilter("\\"+suffix+"$", FileFilterMatchType.FILENAME);
-    AndFileFilter fileFilter = new AndFileFilter(nameFilter, new FileOnlyFilter());
-    Collection<File> files = new ArrayList<>();
-    finder.findFiles(dir, fileFilter, files);
-    return files;
+    try {
+      return DirUtils.findWithSuffix(dir.toPath(), suffix);
+    } catch (IOException e) {
+      log.error("Failed to load files with suffix '" + suffix +"' ", e);
+      return new ArrayList<>();
+    }
   }
 
   private void loadClassData(InputStream is, ClassVisitor classVisitor)

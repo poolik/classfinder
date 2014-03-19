@@ -1,7 +1,7 @@
-package com.poolik.classfinder.util.visitor;
+package com.poolik.classfinder.io.visitor;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
+import com.poolik.classfinder.io.Predicate;
+import com.poolik.classfinder.io.Predicates;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -14,16 +14,8 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
   private final StandardCopyOption copyOption;
   private final Predicate<Path> copyPredicate;
 
-  public CopyDirVisitor(Path fromPath, Path toPath) {
-    this(fromPath, toPath, StandardCopyOption.REPLACE_EXISTING);
-  }
-
   public CopyDirVisitor(Path fromPath, Path toPath, Predicate<Path> predicate) {
     this(fromPath, toPath, StandardCopyOption.REPLACE_EXISTING, predicate);
-  }
-
-  public CopyDirVisitor(Path fromPath, Path toPath, StandardCopyOption copyOption) {
-    this(fromPath, toPath, copyOption, Predicates.<Path>alwaysTrue());
   }
 
   public CopyDirVisitor(Path fromPath, Path toPath, StandardCopyOption copyOption, Predicate<Path> predicate) {
@@ -37,8 +29,8 @@ public class CopyDirVisitor extends SimpleFileVisitor<Path> {
   public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
 
     Path targetPath = toPath.resolve(fromPath.relativize(dir));
-    if(!Files.exists(targetPath)){
-      Files.createDirectory(targetPath);
+    if (!Files.exists(targetPath)) {
+      Files.createDirectories(targetPath);
     }
     return FileVisitResult.CONTINUE;
   }

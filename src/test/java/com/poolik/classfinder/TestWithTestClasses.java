@@ -1,8 +1,8 @@
 package com.poolik.classfinder;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.poolik.classfinder.util.DirUtils;
+import com.poolik.classfinder.io.DirUtils;
+import com.poolik.classfinder.io.Predicate;
+import com.poolik.classfinder.io.Predicates;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;

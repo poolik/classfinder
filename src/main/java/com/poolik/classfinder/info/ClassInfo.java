@@ -81,8 +81,8 @@ public class ClassInfo extends EmptyVisitor {
   private String superClassName = null;
   private String[] implementedInterfaces = null;
   private File locationFound = null;
-  private Set<FieldInfo> fields = new HashSet<FieldInfo>();
-  private Set<MethodInfo> methods = new HashSet<MethodInfo>();
+  private Set<FieldInfo> fields = new HashSet<>();
+  private Set<MethodInfo> methods = new HashSet<>();
 
   /**
    * Create a <tt>ClassInfo</tt> object from a file.
@@ -140,10 +140,10 @@ public class ClassInfo extends EmptyVisitor {
   /**
    * Get the parent (super) class name, if any. Returns null if the
    * superclass is <tt>java.lang.Object</tt>. Note: To find other
-   * ancestor classes, use {@link com.poolik.classfinder.ClassFinder#findAllSuperClasses}.
+   * ancestor classes, use {@link com.poolik.classfinder.ClassHierarchyResolver#findAllSuperClasses}.
    *
    * @return the super class name, or null
-   * @see com.poolik.classfinder.ClassFinder#findAllSuperClasses
+   * @see com.poolik.classfinder.ClassHierarchyResolver#findAllSuperClasses
    */
   public String getSuperClassName() {
     return superClassName;
