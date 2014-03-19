@@ -84,36 +84,6 @@ public class ClassInfo extends EmptyVisitor {
   private Set<AnnotationInfo> annotations = new HashSet<>();
 
   /**
-   * Create a <tt>ClassInfo</tt> object from a file.
-   *
-   * @param classFile the abstract path to the class file to load
-   * @throws com.poolik.classfinder.ClassFinderException load error
-   */
-  public ClassInfo(File classFile) throws ClassFinderException {
-    try {
-      ClassReader cr = new ClassReader(new FileInputStream(classFile));
-      cr.accept(this, ASM_CR_ACCEPT_CRITERIA);
-    } catch (IOException ex) {
-      throw new ClassFinderException(String.format("Unable to load class file '%s'", classFile.getPath()), ex);
-    }
-  }
-
-  /**
-   * Create a <tt>ClassInfo</tt> object from an <tt>InputStream</tt>.
-   *
-   * @param is the open <tt>InputStream</tt> containing the class bytes
-   * @throws com.poolik.classfinder.ClassFinderException load error
-   */
-  public ClassInfo(InputStream is) throws ClassFinderException {
-    try {
-      ClassReader cr = new ClassReader(is);
-      cr.accept(this, ASM_CR_ACCEPT_CRITERIA);
-    } catch (IOException ex) {
-      throw new ClassFinderException("Unable to load class from open input stream", ex);
-    }
-  }
-
-  /**
    * Create a new <tt>ClassInfo</tt> object.
    *
    * @param name           the class name
@@ -216,28 +186,7 @@ public class ClassInfo extends EmptyVisitor {
       buf.append(superClassName);
     }
 
-    return (buf.toString());
-  }
-
-  /**
-   * "Visit" a class. Required by ASM <tt>ClassVisitor</tt> interface.
-   *
-   * @param version    class version
-   * @param access     class access modifiers, etc.
-   * @param name       internal class name
-   * @param signature  class signature (not used here)
-   * @param superName  internal super class name
-   * @param interfaces internal names of all directly implemented
-   *                   interfaces
-   */
-  @Override
-  public void visit(int version,
-                    int access,
-                    String name,
-                    String signature,
-                    String superName,
-                    String[] interfaces) {
-    setClassFields(name, superName, interfaces, access, null);
+    return buf.toString();
   }
 
   /**

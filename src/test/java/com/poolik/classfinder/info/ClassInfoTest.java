@@ -2,9 +2,13 @@ package com.poolik.classfinder.info;
 
 import com.poolik.classfinder.ClassFinder;
 import com.poolik.classfinder.TestWithTestClasses;
+import com.poolik.classfinder.filter.And;
+import com.poolik.classfinder.filter.Interface;
+import com.poolik.classfinder.filter.Not;
 import com.poolik.classfinder.filter.Subclass;
 import com.poolik.classfinder.otherTestClasses.AbstractClass;
 import com.poolik.classfinder.otherTestClasses.ConcreteClass;
+import com.poolik.classfinder.otherTestClasses.SomeInterface;
 import org.junit.Test;
 
 import java.lang.reflect.Modifier;
@@ -22,6 +26,14 @@ public class ClassInfoTest extends TestWithTestClasses {
     ClassFinder classFinder = new ClassFinder();
     classFinder.add(otherClassesFolder.toFile());
     return classFinder;
+  }
+
+  @Test
+  public void toStringReturnSensibleClassSignature() {
+    Collection<ClassInfo> classes = getClassFinder().findClasses(Subclass.of(AbstractClass.class));
+    assertThat(classes.iterator().next().toString(), is("public class com.poolik.classfinder.otherTestClasses.ConcreteClass extends com.poolik.classfinder.otherTestClasses.AbstractClass"));
+    classes = getClassFinder().findClasses(And.allOf(Subclass.of(SomeInterface.class), Not.a(Subclass.of(AbstractClass.class)), Not.a(new Interface())));
+    assertThat(classes.iterator().next().toString(), is("public class com.poolik.classfinder.otherTestClasses.SomeInterfaceImpl implements com.poolik.classfinder.otherTestClasses.SomeInterface"));
   }
 
   @Test

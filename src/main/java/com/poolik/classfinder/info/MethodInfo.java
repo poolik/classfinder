@@ -1,11 +1,13 @@
 package com.poolik.classfinder.info;
 
+import java.util.Arrays;
+
 /**
  * Holds information about a method within a class.
  *
  * @see ClassInfo
  */
-public class MethodInfo implements Comparable<MethodInfo> {
+public class MethodInfo {
   private int access = 0;
   private String name = null;
   private String description = null;
@@ -83,35 +85,18 @@ public class MethodInfo implements Comparable<MethodInfo> {
     return signature.hashCode();
   }
 
-  /**
-   * Compare this object and another <tt>MethodInfo</tt> object. The two
-   * objects are compared by their signature fields.
-   *
-   * @param other the other object
-   * @return a negative integer, zero, or a positive integer, as this
-   * object is less than, equal to, or greater than the specified
-   * object.
-   */
-  public int compareTo(MethodInfo other) {
-    return this.signature.compareTo(other.signature);
-  }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
 
-  /**
-   * Compare this object to another one for equality. If the other
-   * object is a <tt>MethodInfo</tt> instance, the two will be compared by
-   * signature.
-   *
-   * @param other the other object
-   * @return <tt>true</tt> if <tt>other</tt> is a <tt>MethodInfo</tt>
-   * object and it has the same signature as this object,
-   * <tt>false</tt> otherwise.
-   */
-  public boolean equals(Object other) {
-    boolean result;
+    MethodInfo that = (MethodInfo) o;
 
-    result = other instanceof MethodInfo && compareTo((MethodInfo) other) == 0;
-
-    return result;
+    return access == that.access
+        && description.equals(that.description)
+        && Arrays.equals(exceptions, that.exceptions)
+        && name.equals(that.name)
+        && !(signature != null ? !signature.equals(that.signature) : that.signature != null);
   }
 
   public String toString() {

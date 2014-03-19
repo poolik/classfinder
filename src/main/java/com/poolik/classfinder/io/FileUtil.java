@@ -44,13 +44,12 @@
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \*---------------------------------------------------------------------------*/
 
-package com.poolik.classfinder.info;
+package com.poolik.classfinder.io;
 
 import java.io.File;
 
 public class FileUtil {
-  private FileUtil() {
-  }
+  private FileUtil() {}
 
   public static boolean fileCanContainClasses(File file) {
     boolean can = false;

@@ -1,7 +1,7 @@
 package com.poolik.classfinder.resourceLoader;
 
 import com.poolik.classfinder.ClassFinder;
-import com.poolik.classfinder.info.FileUtil;
+import com.poolik.classfinder.io.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,7 +1,7 @@
 package com.poolik.classfinder;
 
 import com.poolik.classfinder.info.ClassInfo;
-import com.poolik.classfinder.info.FileUtil;
+import com.poolik.classfinder.io.FileUtil;
 import com.poolik.classfinder.io.DirUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;

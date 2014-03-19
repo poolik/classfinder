@@ -15,28 +15,11 @@ public class DirUtils {
 
   private DirUtils() {}
 
-  /**
-   * If the path exists, completely removes given file tree starting at and including the given path.
-   *
-   * @param path - path to delete if it exists
-   * @throws IOException
-   */
   public static void deleteIfExists(Path path) throws IOException {
     if (Files.exists(path)) {
       validate(path);
       Files.walkFileTree(path, new DeleteDirVisitor());
     }
-  }
-
-  /**
-   * Copies a directory tree
-   *
-   * @param from - copy from
-   * @param to - to
-   * @throws IOException
-   */
-  public static void copy(Path from, Path to) throws IOException {
-    copy(from, to, Predicates.<Path>alwaysTrue());
   }
 
   public static void copy(Path from, Path to, Predicate<Path> copyPredicate) throws IOException {

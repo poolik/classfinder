@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.*;
 
-import static com.poolik.classfinder.info.FileUtil.fileCanContainClasses;
+import static com.poolik.classfinder.io.FileUtil.fileCanContainClasses;
 
 /**
  * <p>A <tt>ClassFinder</tt> object is used to find classes. By default, an

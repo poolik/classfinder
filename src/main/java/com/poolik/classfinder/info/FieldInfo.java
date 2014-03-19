@@ -78,43 +78,23 @@ public class FieldInfo {
     return value;
   }
 
-  /**
-   * Get the hash code. The hash code is based on the field's name.
-   *
-   * @return the hash code
-   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    FieldInfo fieldInfo = (FieldInfo) o;
+
+    return description.equals(fieldInfo.description)
+        && name.equals(fieldInfo.name)
+        && !(signature != null ? !signature.equals(fieldInfo.signature) : fieldInfo.signature != null);
+  }
+
+  @Override
   public int hashCode() {
-    return signature.hashCode();
-  }
-
-  /**
-   * Compare this object and another <tt>FieldInfo</tt> object. The two
-   * objects are compared by their signature fields.
-   *
-   * @param other the other object
-   * @return a negative integer, zero, or a positive integer, as this
-   * object is less than, equal to, or greater than the specified
-   * object.
-   */
-  public int compareTo(FieldInfo other) {
-    return this.signature.compareTo(other.signature);
-  }
-
-  /**
-   * Compare this object to another one for equality. If the other
-   * object is a <tt>FieldInfo</tt> instance, the two will be compared by
-   * signature.
-   *
-   * @param other the other object
-   * @return <tt>true</tt> if <tt>other</tt> is a <tt>FieldInfo</tt>
-   * object and it has the same signature as this object,
-   * <tt>false</tt> otherwise.
-   */
-  public boolean equals(Object other) {
-    boolean result;
-
-    result = other instanceof FieldInfo && compareTo((FieldInfo) other) == 0;
-
+    int result = name.hashCode();
+    result = 31 * result + description.hashCode();
+    result = 31 * result + (signature != null ? signature.hashCode() : 0);
     return result;
   }
 
