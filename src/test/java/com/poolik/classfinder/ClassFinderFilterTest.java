@@ -33,13 +33,13 @@ public class ClassFinderFilterTest extends TestWithTestClasses {
 
   @Test
   public void filtersByClassNameRegex() {
-    Collection<ClassInfo> classes = getClassFinder().findClasses(new Regex(".*\\d$"));
+    Collection<ClassInfo> classes = getClassFinder().findClasses(Regex.matches(".*\\d$"));
     assertThat(classes.size(), is(3));
   }
 
   @Test
   public void filtersSubclassesOfAbstractClass() {
-    Collection<ClassInfo> classes = getClassFinder().findClasses(new Subclass(com.poolik.classfinder.otherTestClasses.AbstractClass.class));
+    Collection<ClassInfo> classes = getClassFinder().findClasses(Subclass.of(com.poolik.classfinder.otherTestClasses.AbstractClass.class));
     assertThat(classes.size(), is(1));
     assertThat(classes.iterator().next().getClassName(), is(ConcreteClass.class.getName()));
   }
@@ -52,14 +52,14 @@ public class ClassFinderFilterTest extends TestWithTestClasses {
 
   @Test
   public void combinesFiltersWithAnd() {
-    Collection<ClassInfo> classes = getClassFinder().findClasses(new And(new Subclass(SomeInterface.class), new AbstractClass()));
+    Collection<ClassInfo> classes = getClassFinder().findClasses(And.allOf(Subclass.of(SomeInterface.class), new AbstractClass()));
     assertThat(classes.size(), is(1));
     assertThat(classes.iterator().next().getClassName(), is(com.poolik.classfinder.otherTestClasses.AbstractClass.class.getName()));
   }
 
   @Test
   public void combinesFiltersWithOr() {
-    Collection<ClassInfo> classes = getClassFinder().findClasses(new Or(new Regex(".*1$"), new AbstractClass()));
+    Collection<ClassInfo> classes = getClassFinder().findClasses(Or.anyOf(Regex.matches(".*1$"), new AbstractClass()));
     assertThat(classes.size(), is(2));
     assertThat(classes.iterator().next().getClassName(), anyOf(is(TestClass1.class.getName()), is(com.poolik.classfinder.otherTestClasses.AbstractClass.class.getName())));
     assertThat(classes.iterator().next().getClassName(), anyOf(is(TestClass1.class.getName()), is(com.poolik.classfinder.otherTestClasses.AbstractClass.class.getName())));
@@ -67,7 +67,7 @@ public class ClassFinderFilterTest extends TestWithTestClasses {
 
   @Test
   public void invertsFilterWithNot() {
-    Collection<ClassInfo> classes = getClassFinder().findClasses(new Not(new Regex(".*\\d$")));
+    Collection<ClassInfo> classes = getClassFinder().findClasses(Not.a(Regex.matches(".*\\d$")));
     assertThat(classes.size(), is(6));
   }
 
