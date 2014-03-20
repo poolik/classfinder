@@ -7,6 +7,8 @@
     <groupId>com.poolik</groupId>
     <artifactId>classfinder</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <name>Classfinder</name>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -23,6 +25,16 @@
             <url>http://www.poolik.com</url>
         </developer>
     </developers>
+
+    <url>https://github.com/poolik/classfinder</url>
+    <description>Classpath / folder scanner to find specific classes. Classes can be filtered with various filters to find only those that match some specific criteria.</description>
+
+    <licenses>
+        <license>
+            <name>BSD-style</name>
+            <url>http://www.opensource.org/licenses/bsd-license.php</url>
+        </license>
+    </licenses>
 
     <scm>
         <connection>scm:git:git@github.com:poolik/classfinder.git</connection>
