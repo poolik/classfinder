@@ -24,11 +24,25 @@
         </developer>
     </developers>
 
+    <scm>
+        <connection>scm:git:git@github.com:poolik/classfinder.git</connection>
+        <url>scm:git:git@github.com:poolik/classfinder.git</url>
+        <developerConnection>scm:git:git@github.com:poolik/classfinder.git</developerConnection>
+    </scm>
+
     <distributionManagement>
         <repository>
-            <id>sonatype</id>
+            <id>sonatype-nexus-staging</id>
+            <name>Sonatype OSS Staging</name>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+            <layout>default</layout>
         </repository>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype OSS Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <layout>default</layout>
+        </snapshotRepository>
     </distributionManagement>
 
     <dependencies>
