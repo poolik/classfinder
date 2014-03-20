@@ -5,6 +5,12 @@
 Classpath / folder scanner to find specific classes. Classes can be filtered with various
 filters to find only those that match some specific criteria.
 
+Classfinder is an ideal library to create your own lightweight frameworks or tools, where you need to
+dynamically find implementations of some interface or initiate objects. See examples below.
+
+Once you've found the needed classes you can initiate new objects by
+using ```Class.forName(classInfo.getClassName()).newInstance()```
+
 This library is based on https://github.com/bmc/javautil.
 I extracted the ```ClassFinder``` related portion of that library and updated
 it to work with asm 4.1 (there's binary incompatibility between asm 3.x and 4.x).
@@ -18,7 +24,7 @@ The following filters are available:
 * And.java
 * Or.java
 
-**Concrete filters** - used to filter classes either by their modifiers (abstract, interface) or name
+**Concrete filters** - used to filter classes either by their modifiers (abstract, interface), name or other criteria
 * Subclass.java - matches classes that are assignable to the base class
 * Regex.java - matches classes by name
 * Interface.java - matches only interfaces
