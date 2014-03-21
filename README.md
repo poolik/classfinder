@@ -17,6 +17,20 @@ I extracted the ```ClassFinder``` related portion of that library and updated
 it to work with asm 4.1 (there's binary incompatibility between asm 3.x and 4.x).
 I then added tests and started refactoring / further development.
 
+### Installation
+
+The project is available at [Maven Central Repository](http://search.maven.org/#browse%7C-1161128204)
+
+Just add a dependency like so:
+
+```xml
+<dependency>
+    <groupId>com.poolik</groupId>
+    <artifactId>classfinder</artifactId>
+    <version>1.0</version>
+</dependency>
+```
+
 #Filters
 The following filters are available:
 
