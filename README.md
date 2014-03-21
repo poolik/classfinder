@@ -2,8 +2,9 @@
 [![Build Status](https://travis-ci.org/poolik/classfinder.png?branch=master)](https://travis-ci.org/poolik/classfinder)
 [![Coverage Status](https://coveralls.io/repos/poolik/classfinder/badge.png?branch=master)](https://coveralls.io/r/poolik/classfinder?branch=master)
 
-Classpath / folder scanner to find specific classes. Classes can be filtered with various
-filters to find only those that match some specific criteria.
+Classpath, folder, zip and jar scanner to find specific classes. Classes can be filtered with various
+filters to find only those that match some specific criteria. If presented with a folder to search, Classfinder
+will recursively search it for .class, .jar and .zip files which are all also scanned.
 
 Classfinder is an ideal library to create your own lightweight frameworks or tools, where you need to
 dynamically find implementations of some interface or initiate objects. See examples below.
@@ -48,10 +49,10 @@ ClassFilter filter = And.allOf(
 Collection<ClassInfo> foundClasses = finder.findClasses(filter);
 ```
 
-#### Find all test classes in classpath
+#### Find all test classes in ```myJar.jar```
 
 ```java
-ClassFinder finder = new ClassFinder().addClasspath();
+ClassFinder finder = new ClassFinder().add(Paths.get("/path/to/myJar.jar").toFile());
 
 ClassFilter filter = Or.anyOf(
     Subclass.of(TestCase.class),
